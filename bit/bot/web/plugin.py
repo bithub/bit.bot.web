@@ -1,7 +1,8 @@
 import os
 from zope.interface import implements
 
-from bit.bot.common.interfaces import IPlugin,IHTMLResources,IWebImages,IWebCSS,IWebJS,IWebJPlates,IWebHTML,IJPlates,IWebRoot
+from bit.core.interfaces import IPlugin
+from bit.bot.common.interfaces import IHTMLResources,IWebImages,IWebCSS,IWebJS,IWebJPlates,IWebHTML,IJPlates,IWebRoot
 from bit.bot.base.plugin import BotPlugin
 
 from bit.bot.web.root import WebRoot
