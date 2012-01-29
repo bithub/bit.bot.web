@@ -6,7 +6,7 @@ from zope.interface import implements
 from twisted.web import static
 
 from bit.bot.common.interfaces import IHTMLResources, IWebHTML
-from bit.bot.web.resource import BotResource
+from bit.bot.http.resource import BotResource
 
 class BotHTMLResources(object):
     implements(IHTMLResources)
@@ -35,5 +35,4 @@ class BotHTML(BotResource):
     def __init__(self,root):
         self.root = root
         BotResource.__init__(self)
-
 
