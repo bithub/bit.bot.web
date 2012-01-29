@@ -30,5 +30,10 @@ class BotHTMLResources(object):
 class BotHTML(BotResource):
     implements(IWebHTML)
 
+    _ext = ['html']
+
+    def __init__(self,root):
+        self.root = root
+        BotResource.__init__(self)
 
 

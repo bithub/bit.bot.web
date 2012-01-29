@@ -7,6 +7,13 @@ from bit.bot.web.resource import BotResource
 
 class BotJPlates(BotResource):
     implements(IWebJPlates)
+    _ext = ['html']
+
+    def __init__(self,root):
+        self.root = root
+        BotResource.__init__(self)
+
+
 
 class JPlates(BotHTMLResources):
     implements(IJPlates)
