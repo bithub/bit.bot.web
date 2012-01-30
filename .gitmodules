@@ -1,0 +1,6 @@
+[submodule "bit/bot/web/resources/js/jplates"]
+	path = bit/bot/web/resources/js/jplates
+	url = bf@git.3ca.org.uk:bf/js/jplates
+[submodule "bit/bot/web/resources/js/jtk"]
+	path = bit/bot/web/resources/js/jtk
+	url = bf@git.3ca.org.uk:bf/js/jtk
