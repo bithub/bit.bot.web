@@ -32,6 +32,7 @@ class BotWeb(BotPlugin):
                  ,IHTMLResources)
                 ,(JPlates(os.path.join(os.path.dirname(__file__),'jplates'))
                   ,IJPlates)
+                ,(WebRoot(),IWebRoot)
                 ,(getAdapter(root,IHTTPResource,'images'),['images',IHTTPRoot])
                 ,(getAdapter(root,IHTTPResource,'js'),['js',IHTTPRoot])
                 ,(getAdapter(root,IHTTPResource,'css'),['css',IHTTPRoot])
