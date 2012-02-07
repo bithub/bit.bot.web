@@ -28,7 +28,7 @@ if (window.WebSocket) {
     (function () {
         function get_INCLUDE_URI() {
             return (typeof INCLUDE_URI !== "undefined") ?
-                INCLUDE_URI : "/desktop/include/";
+                INCLUDE_URI : "/js/";
         }
 
         var start = "<script src='" + get_INCLUDE_URI(),

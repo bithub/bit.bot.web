@@ -6,7 +6,7 @@ from bit.bot.http.resource import BotResource
 
 class BotJS(BotResource):
     implements(IWebJS)
-    _ext = ['js']
+    _ext = ['js','swf']
 
     def __init__(self,root):
         self.root = root

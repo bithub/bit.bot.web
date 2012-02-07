@@ -10,15 +10,6 @@
 		if (!('active' in this.data()))
 		    this.data('active',{'content':{}});
 
-		var plugins = $.bit('plugins').plugins()
-		//nsole.log(plugins)
-		for (var plugin in plugins)
-		{
-		    if ('load' in plugins[plugin])
-		    {
-			plugins[plugin].load(this);
-		    }
-		}
 
 		var active = this.data('active');
 		active.activity = 'bot';
@@ -54,6 +45,15 @@
 			    //console.log('rendering frame')
 			    $this.bot('renderFrame', function(){
 				//console.log('updating plugins')
+				var plugins = $.bit('plugins').plugins()
+				//nsole.log(plugins)
+				for (var plugin in plugins)
+				{
+				    if ('load' in plugins[plugin])
+				    {
+					plugins[plugin].load($this);
+				    }
+				}
 				$this.bot('updatePlugins',function(){
 				    //$this.bot('loadFrame', 'coin', 'trading');
 				})

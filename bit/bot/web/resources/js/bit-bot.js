@@ -551,8 +551,6 @@
 	var $this = this;
 	var i=0;
 	var add_event = function(resp){
-	    return
-	    ctx.signal('emit', 'open-panel', 'east')					     
 	    $this.add('event-'+i
 		      , new EventMessage(ctx,'admin',resp)
 		      , $this.$
@@ -561,6 +559,9 @@
 		     )
 	    i++;
 	}
+	ctx.signal('listen', 'bot-listen', function(msg) {
+	    add_event(msg)
+	})
 	return
 	ctx.signal('emit', 'subscribe', ['sessions-changed'
 					 ,add_event])	
