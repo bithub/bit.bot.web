@@ -8,7 +8,7 @@ from bit.bot.base.plugin import BotPlugin
 
 from bit.bot.web.root import WebRoot
 from bit.bot.web.html import BotHTML, BotHTMLResources
-from bit.bot.web.images import BotImages
+from bit.bot.web.images import BotImages, BotFavicon
 from bit.bot.web.css import BotCSS
 from bit.bot.web.js import BotJS
 from bit.bot.web.jplates import BotJPlates, JPlates
@@ -24,6 +24,7 @@ class BotWeb(BotPlugin):
         provideAdapter(BotJS,[IHTTPRoot,],IHTTPResource,name='js')
         provideAdapter(BotHTML,[IHTTPRoot,],IHTTPResource,name='html')
         provideAdapter(BotJPlates,[IHTTPRoot,],IHTTPResource,name='jplates')
+        provideAdapter(BotFavicon,[IHTTPRoot,],IHTTPResource,name='favicon.ico')
 
     @property
     def utils(self):
@@ -38,5 +39,6 @@ class BotWeb(BotPlugin):
                 ,(getAdapter(root,IHTTPResource,'css'),['css',IHTTPRoot])
                 ,(getAdapter(root,IHTTPResource,'jplates'),['jplates',IHTTPRoot])
                 ,(getAdapter(root,IHTTPResource,'html'),['html',IHTTPRoot])
+                ,(getAdapter(root,IHTTPResource,'favicon.ico'),['favicon.ico',IHTTPRoot])
                 ]
     
