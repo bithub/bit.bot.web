@@ -18,7 +18,8 @@
 		active.content = {'right': 'trading.account.exchanges'}
 		active.widgets = {'trading.account.funds': 'mtgox:phlax2',
 				 'trading.account.exchanges': 'mtgox:phlax2'}
-		return this.bot('load');
+
+		return this.bot('load',options.wss);
 	    },
 
 	    plugins: function()
@@ -26,7 +27,7 @@
 		return $.bit('plugins').plugins()
 	    },
 
-	    load: function() 
+	    load: function(wss) 
 	    { 
 		//console.log('loading bot');
 		//this.bot('loadTimer');
@@ -69,7 +70,7 @@
 		else
 		    uid = $this.bot('generate_uid')
 		$this.data('session',uid)
-		$this.bot('loadWebSocket')
+		$this.bot('loadWebSocket',wss)
 		return this;
 	    },
 
@@ -192,7 +193,7 @@
 
 		var $this = this;
 		var req = $.ajax({
-		    url: "http://curate.3ca.org.uk/calendar/json/"+activity+'/'+plugin+'/'+path,
+		    url: "http://b0b.3ca.org.uk/calendar/json/"+activity+'/'+plugin+'/'+path,
 		    dataType: "json",
 		    type: "GET",
 		    context: this,
@@ -413,12 +414,12 @@
 		return this;
 	    },
 
-	    loadWebSocket: function(cb) { 		
+	    loadWebSocket: function(wss,cb) { 		
 		var $this = this;
 		this.signal();
 		var active = $this.data('active');		
 		active['socket'] = {}		
-		var wsserver = 'wss://curate.3ca.org.uk:8383/';
+		var wsserver = wss;
 		active['status'] = {}
 		var connect = function()
 		{
@@ -426,12 +427,14 @@
 		    $this.signal('emit','socket-connecting','')		
 		    $this.signal('emit','status-message','connecting to '+wsserver)		
 		    console.log('starting ws connection')
+		    console.log(wsserver)
 		    var ws = new WebSocket(wsserver);
 		    var status = 0;
 		    ws.onmessage = function(evt) 
 		    {
+			console.log(evt)
 			var resp = JSON.parse(evt.data.trim());
-			//console.log(resp)
+			console.log(resp)
 			if ('__bit_ac' in resp)
 			{
 			    //console.log(resp)
@@ -449,7 +452,7 @@
 				console.log(emit)
 				console.log(emmissions[emit])
 				$this.signal('emit',emit,emmissions[emit]);
-			    }
+			    } 
 			}
 		    }
 		    ws.onclose = function(evt) 
@@ -460,7 +463,7 @@
 			active['socket']['status'] = 'disconnected'
 			$this.signal('emit','socket-disconnected','')		
 			$this.signal('emit','status message','connection lost to '+wsserver)		
-			setTimeout(reconnect,5000)
+			//setTimeout(reconnect,5000)
 		    }
 		    ws.onopen = function(evt) 
 		    {		    
@@ -475,6 +478,7 @@
 		var reconnect = function()
 		{
 		    if (active.socket.status == 'connected') return
+		    if (active.socket.status == 'connecting') return
 		    try {			
 			ws = connect()
 		    } catch(e) {			

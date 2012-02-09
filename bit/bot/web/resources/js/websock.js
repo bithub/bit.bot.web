@@ -17,6 +17,8 @@
 
 // Load Flash WebSocket emulator if needed
 
+WEB_SOCKET_DEBUG = true;
+
 if (window.WebSocket) {
     Websock_native = true;
 } else if (window.MozWebSocket) {
@@ -24,6 +26,7 @@ if (window.WebSocket) {
     window.WebSocket = window.MozWebSocket;
 } else {
     /* no builtin WebSocket so load web_socket.js */
+    // WEB_SOCKET_DEBUG = true;
     Websock_native = false;
     (function () {
         function get_INCLUDE_URI() {
@@ -36,16 +39,15 @@ if (window.WebSocket) {
 
         WEB_SOCKET_SWF_LOCATION = get_INCLUDE_URI() +
                     "web-socket-js/WebSocketMain.swf";
-        if (Util.Engine.trident) {
+/*        if (Util.Engine.trident) {
             Util.Debug("Forcing uncached load of WebSocketMain.swf");
             WEB_SOCKET_SWF_LOCATION += "?" + Math.random();
-        }
+        } */
         extra += start + "web-socket-js/swfobject.js" + end;
         extra += start + "web-socket-js/web_socket.js" + end;
         document.write(extra);
     }());
 }
-
 
 function Websock() {
 "use strict";
