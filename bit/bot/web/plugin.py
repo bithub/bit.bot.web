@@ -41,8 +41,9 @@ class BotWeb(BotPlugin):
         js.add('bit/jquery.bit.js',{'rel':'link'})
         js.add('bot.js',{'rel':'link'})
         js.add('bit-bot.js',{'rel':'link'})
+        js.add('bit-agents.js',{'rel':'link'})
+        js.add('bit-repo.js',{'rel':'link'})
         
-
     def load_adapters(self):
         provideAdapter(WebPlugin,[IPlugin,],IPluginExtender,'web')        
         provideAdapter(WebCSS,[IWebCSS,],IWebResource)        
