@@ -581,6 +581,7 @@
 				 _msg['session'] = session;
 				 _msg['password'] = msg;
 				 _msg['request'] = 'auth'
+				 console.log(JSON.stringify(_msg))
 				 ws.send(JSON.stringify(_msg));
 			     })
 

@@ -28,13 +28,10 @@ class BotWeb(BotPlugin):
 
     def load_JS(self):
         js = getUtility(IResourceRegistry,'js')
-        js.add('jquery-min.js',{'rel':'link'})
         js.add('jquery.tmpl.min.js',{'rel':'link'})
         js.add('jquery.ui.min.js',{'rel':'link'})
         js.add('jquery.ui.layout.js',{'rel':'link'})
         js.add('jquery.signal.js',{'rel':'link'})
-        js.add('jplates/jquery.jplates.js',{'rel':'link'})
-        js.add('jtk/jquery.jtk.js',{'rel':'link'})
         js.add('date.js',{'rel':'link'})
         js.add('base64.js',{'rel':'link'})
         js.add('websock.js',{'rel':'link'})
