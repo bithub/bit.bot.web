@@ -4,6 +4,8 @@ from zope.component import getUtility, queryAdapter
 from twisted.web import server
 from twisted.web.resource import Resource
 
+from bit.core.interfaces import IConfiguration
+
 from bit.bot.common.interfaces import IWebImages, IWebCSS, IWebJS, IWebHTML, IWebJPlates, ISessions, IHTTPResource, IHTTPRoot, IResourceRegistry
 
 class WebSession(Resource):
@@ -23,8 +25,9 @@ class WebSession(Resource):
     
 class WebRoot(Resource):
     def render_GET(self, request):
+        config = getUtility(IConfiguration)
         html = getUtility(IHTTPRoot,'html')
-        request.write('<html>\n<head>\n')
+        request.write('<html>\n<head>\n')        
         for css in getUtility(IResourceRegistry,'css').resources:
             request.write(css.render())
         for js in getUtility(IResourceRegistry,'js').resources:
@@ -33,10 +36,10 @@ class WebRoot(Resource):
     <script>
       (function( $ ) {  	
       $(document).ready(function() {	
-      $('#bot').bot({wss:'wss://b0b.3ca.org.uk:8383'});
+      $('#bot').bot({wss:'wss://%s:%s'});
       });
       })( jQuery );
-    </script>\n""")
+    </script>\n""" %(config.get('wss','url'),config.get('wss','port')))
         request.write('</head>\n<body>\n')
         request.write("""
     <div class="page">
