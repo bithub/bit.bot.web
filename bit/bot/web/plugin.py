@@ -28,7 +28,6 @@ class BotWeb(BotPlugin):
 
     def load_JS(self):
         js = getUtility(IResourceRegistry,'js')
-        js.add('jquery.tmpl.min.js',{'rel':'link'})
         js.add('jquery.ui.min.js',{'rel':'link'})
         js.add('jquery.ui.layout.js',{'rel':'link'})
         js.add('jquery.signal.js',{'rel':'link'})
