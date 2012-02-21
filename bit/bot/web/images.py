@@ -12,7 +12,7 @@ from twisted.web.resource import Resource
 
 class BotImages(BotResource):
     implements(IWebImages)
-    _ext = ['png','jpg','jpeg','gif','ico']
+    _ext = ['png','jpg','jpeg','gif','ico','svg']
 
     def __init__(self,root):
         self.root = root

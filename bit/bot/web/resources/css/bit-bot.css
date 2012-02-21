@@ -26,6 +26,16 @@ top: 27%;
 left: 37%;
  }
 
+a.bot-button
+{ 
+position: absolute;
+top: 27%;
+left: 37%;
+background: green;
+ }
+
+
+
 .bot-mini-button,
 .bot-speak-input,
 .bot-speak-password
@@ -144,6 +154,7 @@ min-height: 32px;
 { 
   z-index: 100 !important;
  }
+
 
 
 .bot-content-buttons,

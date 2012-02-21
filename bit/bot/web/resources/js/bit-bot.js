@@ -3,7 +3,7 @@
     var BotIcon = function(ctx){
 	this.init(ctx);
 	var $this = this;
-	this.params['src'] = "/images/curate-icon.jpg"
+	this.params['src'] = "/images/curate-icon-small.png"
     };
     BotIcon.prototype = $.bit('image')
 
@@ -267,18 +267,10 @@
     };
     BotSpeak.prototype = $.bit('widget')
 
-
-    var BotButtonImage = function(ctx){
-	this.init(ctx);
-	var $this = this;
-	this.params['src'] = "/images/curate.jpg"
-    };
-    BotButtonImage.prototype = $.bit('image')
-
     var BotButton = function(ctx){
 	this.init(ctx);
 	var $this = this;
-	this.model = {'image':{child:  function(){return new BotButtonImage(ctx)}}}
+	this.params['class_'] = 'bot-button'
     };
     BotButton.prototype = $.bit('button')
 
