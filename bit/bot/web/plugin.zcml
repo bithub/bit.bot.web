@@ -1,0 +1,24 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope">
+  <include 
+      package="bit.bot.http" 
+      file="plugin.zcml" 
+      />
+
+  <http filepath="./resources" />
+
+  <css name="base.css" />
+  <css name="bit-bot.css" />
+  <css name="bitonomy.css" />
+  <css name="bitonomy.ui.theme.css" />
+
+  <js name="jquery.ui.min.js" />
+  <js name="jquery.ui.layout.js" />
+  <js name="jquery.signal.js" />
+  <js name="date.js" />
+  <js name="base64.js" />
+  <js name="websock.js" />
+  <js name="bot.js" />
+
+</configure>
+

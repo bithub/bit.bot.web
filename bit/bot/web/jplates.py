@@ -1,12 +1,16 @@
 
-from zope.interface import implements
-from bit.bot.common.interfaces import IWebJPlates, IJPlates
+import os
+
+from zope.interface import implements, implementer
+from zope.component import getAdapter, getUtility
+
+from bit.bot.common.interfaces import IWebJPlates, IJPlates, IHTTPResource, IHTTPRoot
 
 from bit.bot.web.html import BotHTMLResources
 from bit.bot.http.resource import BotResource
 
 class BotJPlates(BotResource):
-    implements(IWebJPlates)
+    implements(IWebJPlates,IHTTPResource)
     _ext = ['html']
 
     def __init__(self,root):
@@ -17,3 +21,12 @@ class BotJPlates(BotResource):
 
 class JPlates(BotHTMLResources):
     implements(IJPlates)
+
+@implementer(IHTTPRoot)
+def botJPlates():
+    root = getUtility(IHTTPRoot)
+    return getAdapter(root,IHTTPResource,'jplates')
+
+@implementer(IJPlates)
+def botJPlatesResources():
+    return JPlates(os.path.join(os.path.dirname(__file__)))

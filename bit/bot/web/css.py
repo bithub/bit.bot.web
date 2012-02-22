@@ -1,14 +1,15 @@
 
-from zope.interface import implements
+from zope.interface import implements, implementer
 from zope.component import getUtility, getAdapter
 
-from bit.bot.common.interfaces import IWebCSS, IResourceRegistry, IHTTPRoot, IWebResource
+from bit.bot.common.interfaces import IWebCSS, IResourceRegistry, IHTTPRoot, IWebResource, IHTTPResource, IHTTPRoot
 
 from bit.bot.http.resource import BotResource
 
 from bit.bot.web.registry import ResourceRegistry
 
 class WebCSS(object):
+    implements(IWebResource)
     _meta = {}
     def __init__(self,resource):
         self.resource = resource
@@ -42,11 +43,19 @@ class CSSRegistry(ResourceRegistry):
                 if resid in self._res_meta:
                     resource.update(self._res_meta[resid])
                 yield resource
+css_registry = CSSRegistry()
 
 class BotCSS(BotResource):
-    implements(IWebCSS)
+    implements(IWebCSS,IHTTPResource)
     _ext = ['css']
 
     def __init__(self,root):
         self.root = root
         BotResource.__init__(self)
+
+
+
+@implementer(IHTTPRoot)
+def botCSS():
+    root = getUtility(IHTTPRoot)
+    return getAdapter(root,IHTTPResource,'css')

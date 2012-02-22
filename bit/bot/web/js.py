@@ -1,8 +1,7 @@
 
-from zope.interface import implements
-from zope.component import getUtility
-from bit.bot.common.interfaces import IWebJS, IResourceRegistry, IHTTPRoot, IWebResource
-
+from zope.interface import implements, implementer
+from zope.component import getUtility, getAdapter
+from bit.bot.common.interfaces import IWebJS, IResourceRegistry, IHTTPRoot, IWebResource, IHTTPResource, IHTTPRoot
 from bit.bot.http.resource import BotResource
 
 from bit.bot.web.registry import ResourceRegistry
@@ -48,11 +47,18 @@ class JSRegistry(ResourceRegistry):
                 yield resource
 
 
+js_registry = JSRegistry()
+
 class BotJS(BotResource):
-    implements(IWebJS)
+    implements(IWebJS,IHTTPResource)
     _ext = ['js','swf']
 
     def __init__(self,root):
         self.root = root
         BotResource.__init__(self)
 
+
+@implementer(IHTTPRoot)
+def botJS():
+    root = getUtility(IHTTPRoot)
+    return getAdapter(root,IHTTPResource,'js')

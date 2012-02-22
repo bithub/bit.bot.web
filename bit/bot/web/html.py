@@ -2,10 +2,12 @@
 
 import os
 
-from zope.interface import implements
+from zope.interface import implements, implementer
+from zope.component import getUtility, getAdapter
+
 from twisted.web import static
 
-from bit.bot.common.interfaces import IHTMLResources, IWebHTML
+from bit.bot.common.interfaces import IHTMLResources, IWebHTML, IHTTPResource, IHTTPRoot
 from bit.bot.http.resource import BotResource
 
 class BotHTMLResources(object):
@@ -28,11 +30,21 @@ class BotHTMLResources(object):
 
 
 class BotHTML(BotResource):
-    implements(IWebHTML)
+    implements(IWebHTML,IHTTPResource)
 
     _ext = ['html']
 
     def __init__(self,root):
         self.root = root
         BotResource.__init__(self)
+
+
+@implementer(IHTMLResources)
+def botHTMLResources():
+    return BotHTMLResources(os.path.join(os.path.dirname(__file__)))
+
+@implementer(IHTTPRoot)
+def botHTML():
+    root = getUtility(IHTTPRoot)
+    return getAdapter(root,IHTTPResource,'html')
 

@@ -1,4 +1,5 @@
 
+from zope.interface import implements
 from zope.component import getUtility, queryAdapter
 
 from twisted.web import server
@@ -6,7 +7,7 @@ from twisted.web.resource import Resource
 
 from bit.core.interfaces import IConfiguration
 
-from bit.bot.common.interfaces import IWebImages, IWebCSS, IWebJS, IWebHTML, IWebJPlates, ISessions, IHTTPResource, IHTTPRoot, IResourceRegistry
+from bit.bot.common.interfaces import IWebImages, IWebCSS, IWebJS, IWebHTML, IWebJPlates, ISessions, IHTTPResource, IHTTPRoot, IResourceRegistry, IWebRoot
 
 class WebSession(Resource):
     def render_GET(self, request):
@@ -24,6 +25,7 @@ class WebSession(Resource):
         return server.NOT_DONE_YET
     
 class WebRoot(Resource):
+    implements(IWebRoot)
     def render_GET(self, request):
         config = getUtility(IConfiguration)
         html = getUtility(IHTTPRoot,'html')
@@ -57,3 +59,6 @@ class WebRoot(Resource):
             return self
         
         return getUtility(IHTTPRoot,name)
+
+
+web_root = WebRoot()
