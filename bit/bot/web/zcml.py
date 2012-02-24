@@ -1,6 +1,5 @@
 
 import zope
-import os
 import bit
 
 from zope.i18nmessageid import MessageFactory
