@@ -463,7 +463,7 @@
 			active['socket']['status'] = 'disconnected'
 			$this.signal('emit','socket-disconnected','')		
 			$this.signal('emit','status message','connection lost to '+wsserver)		
-			//setTimeout(reconnect,5000)
+			setTimeout(reconnect,5000)
 		    }
 		    ws.onopen = function(evt) 
 		    {		    
