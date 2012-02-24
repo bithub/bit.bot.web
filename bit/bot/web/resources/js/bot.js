@@ -38,10 +38,16 @@
 				 var active = $this.data('active');
 				 $this.bot('updateFrame', active.activity, active.plugin)
 			     });						
-
+		
+		var connected = false;
 		this.signal('listen', 'connection-made', function(){
 		    $this.signal('emit', 'send-helo', '');
 		    $this.signal('listen', 'helo', function(){			
+			if (connected) {
+			    $this.bot('updatePlugins')
+			    return
+			}
+			connected = true;
 			$this.bot('loadTemplates', function(){
 			    //console.log('rendering frame')
 			    $this.bot('renderFrame', function(){
@@ -162,9 +168,10 @@
 		this.data('active').widgets[widget] = v;
 		return this
 	    },
-
+	    
 	    renderFrame: function(cb) 
 	    {
+		
 		var active = this.data('active')
 		var plugin = $.bit('plugins').plugins()['bit.'+active.activity+'.'+active.plugin];
 		var $this = this;
@@ -301,9 +308,9 @@
 		}
 		return this
 	    },
-
 	    loadTemplates: function(cb)
 	    {
+
 		var plugins = $.bit('plugins').plugins()
 		var plugin_templates = {};
 		for (var plugin in plugins)
@@ -320,7 +327,8 @@
 //		    $.jplates(plugin_templates, function()
 //			      {
 		    //console.log('plugin templates loaded')
-		    if (cb) cb();
+
+		   if (cb) cb();
 //			      })/
 		}
 		$.jtk('load',load_plugin_templates)
@@ -418,9 +426,10 @@
 		var $this = this;
 		this.signal();
 		var active = $this.data('active');		
-		active['socket'] = {}		
+		active['socket'] = {};		
 		var wsserver = wss;
-		active['status'] = {}
+		active['status'] = {};
+		var connected = false;
 		var connect = function()
 		{
 		    active['socket']['status'] = 'connecting'
@@ -467,11 +476,17 @@
 		    }
 		    ws.onopen = function(evt) 
 		    {		    
-			console.log('connected');
 			var session = '';
 			$this.signal('emit','status-message','connected to '+wsserver)		
 			active['socket']['status'] = 'connected'
-			$this.signal('emit','socket-connected','')		
+			if (!connected) {
+			    connected = true;
+			    console.log('connected');
+			    $this.signal('emit','socket-connected','')		
+			} else {
+			    $this.signal('emit','socket-connected','')					    
+			    console.log('re-connected');
+			}			    
 		    }		
 		    return ws
 		}

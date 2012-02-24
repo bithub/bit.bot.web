@@ -49,6 +49,13 @@
 			   //console.log(active.socket.status)
 			   $this.kids['image'].element.attr('src','/images/'+active.socket.status+'.png')
 		       })
+
+
+	    ctx.signal('listen','socket-connected', function()
+		       {
+			   //console.log(active.socket.status)
+			   $this.kids['image'].element.attr('src','/images/'+active.socket.status+'.png')
+		       })
 	}
     };
     BotConnectStatusButton.prototype = $.bit('button')
