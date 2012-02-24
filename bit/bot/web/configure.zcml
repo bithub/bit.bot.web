@@ -3,11 +3,6 @@
     i18n_domain="bit.bot.web">
   <include package="bit.bot.http" />
   <adapter
-      factory=".extends.WebPlugin"
-      for="bit.core.interfaces.IPlugin"
-      name="web"
-      />
-  <adapter
       factory=".css.WebCSS"
       provides="bit.bot.common.interfaces.IWebResource"
       for="bit.bot.common.interfaces.IWebCSS"
