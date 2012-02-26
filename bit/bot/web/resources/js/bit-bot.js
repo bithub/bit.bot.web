@@ -535,13 +535,31 @@
     };
     BotChatResponse.prototype = $.bit('list_item')
 
+
+    var BotThought = function(ctx,speaker,msg){
+	this.init(ctx);
+	var $this = this;
+	var lines = msg.split('\n');
+	this.params['class_'] = 'thought-bubble'
+	this.model = {};
+	for (var line in lines)
+	{
+	    this.model['bot-line-'+line] = {child:  function(_line){return new BotChatResponseLine(ctx,_line)}
+					    ,args: [lines[line],]}
+	}
+
+    };
+    BotThought.prototype = $.bit('widget')
+
+
     var EventMessage = function(ctx,type,msg){
 	this.init(ctx);
 	var $this = this;
 	var lines = msg.split('\n');
 	this.params['class_'] = 'event-'+type
 	this.model = {}
-	this.model['response-speech'] = {child:  function(){return new BotChatResponseSpeech(ctx,type,msg)}}
+	var short_msg = msg.slice(0,13)+'...'
+	this.model['thought'] = {child:  function(){return new BotThought(ctx,type,short_msg)}}
     };
     EventMessage.prototype = $.bit('list_item')
 
