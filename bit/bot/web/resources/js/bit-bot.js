@@ -540,7 +540,7 @@
 	this.init(ctx);
 	var $this = this;
 	var lines = msg.split('\n');
-	this.params['class_'] = 'thought-bubble'
+	this.params['class_'] = 'thought-bubble hidden'
 	this.model = {};
 	for (var line in lines)
 	{
@@ -558,32 +558,35 @@
 	var lines = msg.split('\n');
 	this.params['class_'] = 'event-'+type
 	this.model = {}
+	this.model['short_thought'] = { args: [msg,]
+					,child:  function(_m){
+					    var title = $.bit('title').init(ctx)
+					    title.params['type'] = 'h3'
+					    title.model['title_link'] = { args: [_m,]
+								     ,child:  function(_msg){
+									 var title_link = $.bit('link').init(ctx)
+									 title_link.after_add = function(){
+									     this.$.click(function(evt)
+											  {
+											      evt.preventDefault();
+											      $this.kids['thought'].toggle('hidden')
+											  })
+									 }
+									 title_link.params['content_'] = _msg.slice(0,23)+'...'	
+									 return title_link
+								     }
+								   }
+					    return title
+					}}
 	this.model['thought'] = {child:  function(){return new BotThought(ctx,type,msg)}}
     };
     EventMessage.prototype = $.bit('list_item')
-
-    var EventMessageTitle = function(ctx,type,msg){
-	this.init(ctx);
-	var $this = this;
-	var lines = msg.split('\n');
-	this.params['class_'] = 'event-'+type
-	this.model = {}
-	var short_msg = msg.slice(0,13)+'...'
-	this.model['thought'] = {child:  function(){return new BotThought(ctx,type,short_msg)}}
-    };
-    EventMessageTitle.prototype = $.bit('list_item')
 
     var BotEvents = function(ctx){
 	this.init(ctx);
 	var $this = this;
 	var i=0;
 	var add_event = function(resp){
-	    $this.add('event-title-'+i
-		      , new EventMessageTitle(ctx,'admin',resp)
-		      , $this.$
-		      , null
-		      , 0
-		     )
 	    $this.add('event-'+i
 		      , new EventMessage(ctx,'admin',resp)
 		      , $this.$
@@ -596,16 +599,6 @@
 	    add_event(msg)
 	})
 	return
-	ctx.signal('emit', 'subscribe', ['sessions-changed'
-					 ,add_event])	
-	ctx.signal('emit', 'subscribe', ['person-authenticated'
-					 ,add_event])	
-	ctx.signal('emit', 'subscribe', ['bot-speaks'
-					 ,add_event])	
-	ctx.signal('emit', 'subscribe', ['person-speaks'
-					 ,add_event])	
-	ctx.signal('emit', 'subscribe', ['sockets-changed'
-					 ,add_event])	
     };
     BotEvents.prototype = $.bit('list')
 
