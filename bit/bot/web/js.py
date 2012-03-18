@@ -37,7 +37,8 @@ class JSRegistry(ResourceRegistry):
             folder = js            
             if len(parts):
                 for part in parts:
-                    folder = folder.children[part]                
+                    if part in folder.children:
+                        folder = folder.children[part]                
             if resid in folder.children:
                 resource = IWebResource(js)
                 resource.update(dict(path=_resid
