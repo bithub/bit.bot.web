@@ -15,10 +15,18 @@
   <js name="jquery.ui.min.js" />
   <js name="jquery.ui.layout.js" />
   <js name="jquery.signal.js" />
+
+  <include 
+      package="bit.bot.jtk" 
+      file="plugin.zcml" 
+      />
+
+  <js name="bit/jquery.bit.js" />
   <js name="date.js" />
   <js name="base64.js" />
   <js name="websock.js" />
   <js name="bot.js" />
+  <js name="bit-bot.js" />
 
 </configure>
 
