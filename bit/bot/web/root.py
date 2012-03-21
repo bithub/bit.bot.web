@@ -1,4 +1,3 @@
-
 from zope.interface import implements
 from zope.component import getUtility
 
@@ -6,8 +5,9 @@ from twisted.web import server
 from twisted.web.resource import Resource
 
 from bit.core.interfaces import IConfiguration
+from bit.bot.common.interfaces import ISessions, IWebRoot, IWebHTML
+from bit.bot.http.interfaces import IHTTPRoot, IResourceRegistry
 
-from bit.bot.common.interfaces import IWebHTML, ISessions, IHTTPRoot, IResourceRegistry, IWebRoot
 
 class WebSession(Resource):
     def render_GET(self, request):

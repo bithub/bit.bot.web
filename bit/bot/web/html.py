@@ -1,5 +1,3 @@
-
-
 import os
 
 from zope.interface import implements, implementer
@@ -7,8 +5,10 @@ from zope.component import getUtility, getAdapter
 
 from twisted.web import static
 
-from bit.bot.common.interfaces import IHTMLResources, IWebHTML, IHTTPResource, IHTTPRoot
+from bit.bot.common.interfaces import IHTMLResources, IWebHTML
+from bit.bot.http.interfaces import IHTTPResource, IHTTPRoot
 from bit.bot.http.resource import BotResource
+
 
 class BotHTMLResources(object):
     implements(IHTMLResources)

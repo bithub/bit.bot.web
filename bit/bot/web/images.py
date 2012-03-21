@@ -1,13 +1,11 @@
-
 from zope.interface import implements, implementer
 from zope.component import getUtility, getAdapter
 
-from bit.bot.common.interfaces import IWebImages, IHTTPRoot, IHTTPResource
-
-from bit.bot.http.resource import BotResource
-
 from twisted.web.resource import Resource
 
+from bit.bot.common.interfaces import IWebImages
+from bit.bot.http.interfaces import IHTTPRoot, IHTTPResource
+from bit.bot.http.resource import BotResource
 
 
 class BotImages(BotResource):

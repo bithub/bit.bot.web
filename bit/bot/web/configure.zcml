@@ -15,38 +15,38 @@
       />
   <adapter
       factory=".images.BotImages"
-      for="bit.bot.common.interfaces.IHTTPRoot"
-      provides="bit.bot.common.interfaces.IHTTPResource"
+      for="bit.bot.http.interfaces.IHTTPRoot"
+      provides="bit.bot.http.interfaces.IHTTPResource"
       name="images"
       />
   <adapter
       factory=".css.BotCSS"
-      for="bit.bot.common.interfaces.IHTTPRoot"
-      provides="bit.bot.common.interfaces.IHTTPResource"
+      for="bit.bot.http.interfaces.IHTTPRoot"
+      provides="bit.bot.http.interfaces.IHTTPResource"
       name="css"
       />
   <adapter
       factory=".js.BotJS"
-      for="bit.bot.common.interfaces.IHTTPRoot"
-      provides="bit.bot.common.interfaces.IHTTPResource"
+      for="bit.bot.http.interfaces.IHTTPRoot"
+      provides="bit.bot.http.interfaces.IHTTPResource"
       name="js"
       />
   <adapter
       factory=".html.BotHTML"
-      for="bit.bot.common.interfaces.IHTTPRoot"
-      provides="bit.bot.common.interfaces.IHTTPResource"
+      for="bit.bot.http.interfaces.IHTTPRoot"
+      provides="bit.bot.http.interfaces.IHTTPResource"
       name="html"
       />
   <adapter
       factory=".jplates.BotJPlates"
-      for="bit.bot.common.interfaces.IHTTPRoot"
-      provides="bit.bot.common.interfaces.IHTTPResource"
+      for="bit.bot.http.interfaces.IHTTPRoot"
+      provides="bit.bot.http.interfaces.IHTTPResource"
       name="jplates"
       />
   <adapter
       factory=".images.BotFavicon"
-      for="bit.bot.common.interfaces.IHTTPRoot"
-      provides="bit.bot.common.interfaces.IHTTPResource"
+      for="bit.bot.http.interfaces.IHTTPRoot"
+      provides="bit.bot.http.interfaces.IHTTPResource"
       name="favicon.ico"
       />
   <utility
