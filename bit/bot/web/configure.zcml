@@ -50,14 +50,6 @@
       name="favicon.ico"
       />
   <utility
-      component=".css.css_registry"
-      name="css"
-      />  
-  <utility
-      component=".js.js_registry"
-      name="js"
-      />  
-  <utility
       component=".root.web_root"
       provides="bit.bot.common.interfaces.IWebRoot"
       />

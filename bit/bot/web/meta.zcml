@@ -5,16 +5,4 @@
       package="bit.bot.http" 
       file="meta.zcml" 
       />
-  <meta:directives namespace="http://namespaces.zope.org/zope">
-    <meta:directive
-        name="css"
-        schema=".zcml.ICSSDirective"
-        handler=".zcml.css"
-        />
-    <meta:directive
-        name="js"
-        schema=".zcml.IJSDirective"
-        handler=".zcml.js"
-        />
-  </meta:directives>
 </configure>
