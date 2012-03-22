@@ -12,7 +12,8 @@ from bit.bot.http.resource import BotResource
 
 class BotHTMLResources(object):
     implements(IHTMLResources)
-    def __init__(self,dir):
+
+    def __init__(self, dir):
         self.dir = dir
         self._root = static.File(self.dir)
 
@@ -20,21 +21,19 @@ class BotHTMLResources(object):
     def root(self):
         return self._root
 
-    def resource(self,*la):
+    def resource(self, *la):
         resource = self._root
-        if len(la)>1:
+        if len(la) > 1:
             for child in la[:-1]:
                 resource = resource.children[child]
-        return os.path.join(resource.path,la[-1])
-
+        return os.path.join(resource.path, la[-1])
 
 
 class BotHTML(BotResource):
-    implements(IWebHTML,IHTTPResource)
-
+    implements(IWebHTML, IHTTPResource)
     _ext = ['html']
 
-    def __init__(self,root):
+    def __init__(self, root):
         self.root = root
         BotResource.__init__(self)
 
@@ -43,8 +42,8 @@ class BotHTML(BotResource):
 def botHTMLResources():
     return BotHTMLResources(os.path.join(os.path.dirname(__file__)))
 
+
 @implementer(IHTTPRoot)
 def botHTML():
     root = getUtility(IHTTPRoot)
-    return getAdapter(root,IHTTPResource,'html')
-
+    return getAdapter(root, IHTTPResource, 'html')

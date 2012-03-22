@@ -13,7 +13,7 @@ class BotJPlates(BotResource):
     implements(IWebJPlates, IHTTPResource)
     _ext = ['html']
 
-    def __init__(self,root):
+    def __init__(self, root):
         self.root = root
         BotResource.__init__(self)
 
@@ -25,7 +25,7 @@ class JPlates(BotHTMLResources):
 @implementer(IHTTPRoot)
 def botJPlates():
     root = getUtility(IHTTPRoot)
-    return getAdapter(root, IHTTPResource,'jplates')
+    return getAdapter(root, IHTTPResource, 'jplates')
 
 
 @implementer(IJPlates)
