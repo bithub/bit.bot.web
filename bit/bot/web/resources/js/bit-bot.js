@@ -1,955 +1,1130 @@
-(function( $ ) {  	
+(function ($) {
+    "use strict";
+    var BotIcon, BotSpeakButton, BotConnectStatusButton, BotStatusMessage, BotStatus, BotContentButton, BotContentButtons, BotAuthStatusButton, BotListenButton, BotSpeakInput, BotSpeakForm, BotSpeak, BotButton, BotContent, Bot, BotFeet, BotBrain, BotChatSpeaker, BotChatResponseLine, BotChatResponseSpeech, BotChatResponse, BotChatResponseSpeechTail, BotThought, EventMessage, BotEvents, BotChat, BotEarLeft, BotEarRight, PanelBotFeet, PanelBotBrain, PanelBotEarRight, PanelBotEarLeft, BitBot, PanelBot;
 
-    var BotIcon = function(ctx){
-	this.init(ctx);
-	var $this = this;
-	this.params['src'] = "/images/curate-icon-small.png"
+    BotIcon = function (ctx) {
+        var $this;
+        $this = this;
+        this.init(ctx);
+        this.params.src = "/images/curate-icon-small.png";
     };
-    BotIcon.prototype = $.bit('image')
+    BotIcon.prototype = $.bit('image');
 
-
-    var BotSpeakButton = function(ctx){
-	this.init(ctx);
-	var $this = this;
-	this.model = {'image':{child:  function(){return new BotIcon(ctx)}}}
-	this.after_add = function()
-	{	    
-	    $this.$.click(function(evt)
-				{
-				    evt.preventDefault();
-				    ctx.signal('emit', 'toggle-panel', 'west')
-				})
-	}
+    BotSpeakButton = function (ctx) {
+        var $this;
+        $this = this;
+        this.init(ctx);
+        this.model = {
+            image: {
+                child: function () {
+                    return new BotIcon(ctx);
+                }
+            }
+        };
+        this.after_add = function () {
+            $this.$.click(function (evt) {
+                evt.preventDefault();
+                ctx.signal('emit', 'toggle-panel', 'west');
+            });
+        };
     };
-    BotSpeakButton.prototype = $.bit('button')
+    BotSpeakButton.prototype = $.bit('button');
 
-    var BotConnectStatusButton = function(ctx){
-	this.init(ctx);
-	var $this = this;
-	var active = ctx.data('active')
-	this.model = {}
-	this.model['image'] = {child:  function(){
-	    icon = new BotIcon(ctx);
-	    icon.params['src'] = '/images/'+active.socket.status+'.png'
-	    return icon;
-	}}
-	this.after_add = function()
-	{	    	   
-	    //pre-load connection images;
-	    	    
-	    var connected = new Image();
-	    connected.src = '/images/connected.png';
-	    var connecting = new Image();
-	    connecting.src = '/images/connecting.png';
-	    var disconnected = new Image();
-	    disconnected.src = '/images/disconnected.png';
+    BotConnectStatusButton = function (ctx) {
+        var $this, active;
+        $this = this;
+        this.init(ctx);
+        active = ctx.data('active');
+        this.model = {};
+        this.model.image = {
+            child: function () {
+                var icon;
+                icon = new BotIcon(ctx);
+                icon.params.src = '/images/' + active.socket.status + '.png';
+                return icon;
+            }
+        };
 
-	    ctx.signal('listen','socket-disconnected', function()
-		       {
-			   //console.log(active.socket.status)
-			   $this.kids['image'].element.attr('src','/images/'+active.socket.status+'.png')
-		       })
+        this.after_add = function () {
+            var connected, connecting, disconnected;
+            //pre-load connection images;
+            connected = new Image();
+            connected.src = '/images/connected.png';
+            connecting = new Image();
+            connecting.src = '/images/connecting.png';
+            disconnected = new Image();
+            disconnected.src = '/images/disconnected.png';
 
+            ctx.signal('listen', 'socket-disconnected', function () {
+                //console.log(active.socket.status)
+                $this.kids.image.element.attr('src', '/images/' + active.socket.status + '.png');
+            });
 
-	    ctx.signal('listen','socket-connected', function()
-		       {
-			   //console.log(active.socket.status)
-			   $this.kids['image'].element.attr('src','/images/'+active.socket.status+'.png')
-		       })
-	}
+            ctx.signal('listen', 'socket-connected', function () {
+                //console.log(active.socket.status)
+                $this.kids.image.element.attr('src', '/images/' + active.socket.status + '.png');
+            });
+        };
     };
-    BotConnectStatusButton.prototype = $.bit('button')
+    BotConnectStatusButton.prototype = $.bit('button');
 
-    var BotStatusMessage = function(ctx){
-	this.init(ctx);
-	var $this = this;
-	var active = ctx.data('active')
-	this.params['content_'] = active.status.message;
-	this.after_add = function()
-	{	    	   
-	    ctx.signal('listen','status-message', function(msg)
-		       {
-			   $this.$.html(msg)
-		       })
-	}
+    BotStatusMessage = function (ctx) {
+        var $this, active;
+        $this = this;
+        this.init(ctx);
+        active = ctx.data('active');
+        this.params.content_ = active.status.message;
+        this.after_add = function () {
+            ctx.signal('listen', 'status-message', function (msg) {
+                $this.$.html(msg);
+            });
+        };
     };
-    BotStatusMessage.prototype = $.bit('button')
+    BotStatusMessage.prototype = $.bit('button');
 
-    var BotStatus = function(ctx){
-	this.init(ctx);
-	var $this = this;
-	var active = ctx.data('active')
-	this.model = {}
-	this.model['bot-status-button'] = {child:  function(){return new BotConnectStatusButton(ctx)}}
-	//this.model['bot-status-message'] = {child:  function(){return new BotStatusMessage(ctx)}}
+    BotStatus = function (ctx) {
+        var $this, active;
+        $this = this;
+        this.init(ctx);
+        active = ctx.data('active');
+        this.model = {};
+        this.model['bot-status-button'] = {
+            child:  function () {
+                return new BotConnectStatusButton(ctx);
+            }
+        };
+        //this.model['bot-status-message'] = {child:  function (){return new BotStatusMessage(ctx)}}
     };
-    BotStatus.prototype = $.bit('widget')
+    BotStatus.prototype = $.bit('widget');
 
-    var BotContentButton = function(ctx,contentid){
-	this.init(ctx);
-	var $this = this;
-	var active = ctx.data('active')
-	this.params['content_'] = contentid
-	this.after_add = function()
-	{	    
-	    $this.$.click(function(evt)
-				{
-				    evt.preventDefault();
-				    ctx.signal('emit', 'toggle-content', contentid.split('-')[1])
-				})
+    BotContentButton = function (ctx, contentid) {
+        var $this, active;
+        $this = this;
+        this.init(ctx);
+        active = ctx.data('active');
+        this.params.content_ = contentid;
+        this.after_add = function () {
+            $this.$.click(function (evt) {
+                evt.preventDefault();
+                ctx.signal('emit', 'toggle-content', contentid.split('-')[1]);
+            });
 
-	    $this.$.bind('contextmenu'
-			       , function(evt)
-			       {
-				   evt.preventDefault();
-			       })
-	}
+            $this.$.bind('contextmenu', function (evt) {
+                evt.preventDefault();
+            });
+        };
     };
-    BotContentButton.prototype = $.bit('button')
+    BotContentButton.prototype = $.bit('button');
 
-    var BotContentButtons = function(ctx){
-	this.init(ctx);
-	var $this = this;
-	var active = ctx.data('active')
-	this.after_add = function()
-	{
-	    ctx.signal('listen', 'close-sessions', function(resp)
-		       {		       
-			   for (var kid in $this.kids)
-			   {
-			       $this.destroy(kid)
-			   }
-		   })
-	    ctx.signal('listen', 'close-session', function(resp)
-		       {		       
-			   if (resp in $this.kids)
-			   {
-			       $this.destroy(resp)
-			   }
-		       })	    
-	    ctx.signal('listen', 'show-content', function(resp){
-		var parts = resp.split('-')
-		var rtype = parts.shift()
-		var button = $.bit('plugins').plugins()['bit.bot.'+rtype].load_activity_button();
-		var session = parts[0];
-		var cbutton = $.bit('button').init(ctx)
-		cbutton.subtype = 'image'
-		cbutton.src = button.icon
-		cbutton.after_add = function()
-		{	    
-		    cbutton.$.click(function(evt)
-				  {
-				      evt.preventDefault();
-				      ctx.signal('emit', 'toggle-content', session)
-				  })
-		    
-		    cbutton.$.bind('contextmenu'
-				 , function(evt)
-				 {
-				     evt.preventDefault();
-				 })
-		}		
-		if (!$this.has_child(session)) {
-		    $this.add(session, cbutton);
-		}
-	    })	    
-	}
+    BotContentButtons = function (ctx) {
+        var $this, active;
+        $this = this;
+        this.init(ctx);
+        active = ctx.data('active');
+        this.after_add = function () {
+            ctx.signal('listen', 'close-sessions', function (resp) {
+                var kid, i;
+                for (i = 0; i === $this.kids.length; i += 1) {
+                    kid = $this.kids[i];
+                    $this.destroy(kid);
+                }
+            });
+            ctx.signal('listen', 'close-session', function (resp) {
+                if ($this.kids[resp]) {
+                    $this.destroy(resp);
+                }
+            });
+
+            ctx.signal('listen', 'show-content', function (resp) {
+                var parts, rtype, button, session, cbutton;
+                parts = resp.split('-');
+                rtype = parts.shift();
+                button = $.bit('plugins').plugins()['bit.bot.' + rtype].load_activity_button();
+                session = parts[0];
+                cbutton = $.bit('button').init(ctx);
+                cbutton.subtype = 'image';
+                cbutton.src = button.icon;
+                cbutton.after_add = function () {
+                    cbutton.$.click(function (evt) {
+                        evt.preventDefault();
+                        ctx.signal('emit', 'toggle-content', session);
+                    });
+
+                    cbutton.$.bind('contextmenu', function (evt) {
+                        evt.preventDefault();
+                    });
+                };
+                if (!$this.has_child(session)) {
+                    $this.add(session, cbutton);
+                }
+            });
+        };
     };
-    BotContentButtons.prototype = $.bit('widget')
+    BotContentButtons.prototype = $.bit('widget');
 
+    BotAuthStatusButton = function (ctx) {
+        var $this, active;
+        $this = this;
+        this.init(ctx);
+        active = ctx.data('active');
+        this.model = {};
+        this.model.image = {
+            child: function () {
+                var icon;
+                icon = new BotIcon(ctx);
+                icon.params.src = '/images/person.png';
+                return icon;
+            }
+        };
 
-    var BotAuthStatusButton = function(ctx){
-	this.init(ctx);
-	var $this = this;
-	var active = ctx.data('active')
-	this.model = {}
-	this.model['image'] = {child:  function(){
-	    icon = new BotIcon(ctx);
-	    icon.params['src'] = '/images/person.png'
-	    return icon;
-	}}
-	this.after_add = function()
-	{	    	   
-	    ctx.signal('listen','auth-successful', function(resp)
-		       {
-			   $this.kids['image'].$.attr('src','/images/trinity-person.png')
-		       })
-	    ctx.signal('listen', 'auth-goodbye', function(resp)
-		       {
-			   $this.kids['image'].$.attr('src','/images/person.png')
-		       })
-	}
+        this.after_add = function () {
+            ctx.signal('listen', 'auth-successful', function (resp) {
+                $this.kids.image.$.attr('src', '/images/trinity-person.png');
+            });
+
+            ctx.signal('listen', 'auth-goodbye', function (resp) {
+                $this.kids.image.$.attr('src', '/images/person.png');
+            });
+        };
     };
-    BotAuthStatusButton.prototype = $.bit('button')
+    BotAuthStatusButton.prototype = $.bit('button');
 
-    var BotListenButton = function(ctx){
-	this.init(ctx);
-	var $this = this;
-	this.model = {'image':{child:  function()
-			       {
-				   var icon = new BotIcon(ctx)
-				   icon.params['src'] = '/images/listen.png'
-				   return icon
-			       }}}
-	this.after_add = function()
-	{
-	    $this.$.hide();
-	    ctx.signal('listen','auth-successful',function(){
-		$this.$.show();
-	    })
-	    $this.$.click(function(evt)
-				{
-				    evt.preventDefault();
-				    ctx.signal('emit', 'toggle-panel', 'east')
-				})
-	}
+    BotListenButton = function (ctx) {
+        var $this, active;
+        $this = this;
+        this.init(ctx);
+        active = ctx.data('active');
+        this.model = {
+            image: {
+                child:  function () {
+                    var icon;
+                    icon = new BotIcon(ctx);
+                    icon.params.src = '/images/listen.png';
+                    return icon;
+                }
+            }
+        };
+
+        this.after_add = function () {
+            $this.$.hide();
+            ctx.signal('listen', 'auth-successful', function () {
+                $this.$.show();
+            });
+
+            $this.$.click(function (evt) {
+                evt.preventDefault();
+                ctx.signal('emit', 'toggle-panel', 'east');
+            });
+        };
     };
-    BotListenButton.prototype = $.bit('button')
+    BotListenButton.prototype = $.bit('button');
 
+    BotSpeakInput = function (ctx, type) {
+        var $this, active;
+        $this = this;
+        this.init(ctx);
+        active = ctx.data('active');
+        if (type === 'text') {
+            this.params.title = 'speak here';
+            this.params.content_ = 'speak here';
+        } else if (type === 'password') {
+            this.params.title = '';
+            this.params.content = '';
+        }
+        this.params.type = type;
+        this.after_add = function () {
+            if (type === 'text') {
+                $this.hint($this.$);
+            }
 
-
-    var BotSpeakInput = function(ctx,type){
-	this.init(ctx);
-	var $this = this;
-	if (type == 'text')
-	    this.params['title'] = 'speak here';
-	    this.params['content_'] = 'speak here';
-	if (type == 'password')
-	    this.params['title'] = '';
-	    this.params['content_'] = '';
-	
-	this.params['type'] = type;
-	this.after_add = function()
-	{	    
-	    if (type == 'text')
-		$this.hint($this.$)
-	    $this.$.keypress(function(evt)
-				   {
-				       if (evt.keyCode == 13)
-				       {
-					   evt.preventDefault();
-					   if (type == 'text')
-					       ctx.signal('emit', 'speak', $this.$.val());
-					   else
-					       ctx.signal('emit', 'speak-password', $this.$.val());
-					   $this.$.val('');
-				       }
-				   })
-	}
+            $this.$.keypress(function (evt) {
+                if (evt.keyCode === 13) {
+                    evt.preventDefault();
+                    if (type === 'text') {
+                        ctx.signal('emit', 'speak', $this.$.val());
+                    }
+                } else {
+                    ctx.signal('emit', 'speak-password', $this.$.val());
+                    $this.$.val('');
+                }
+            });
+        };
     };
-    BotSpeakInput.prototype = $.bit('input')
+    BotSpeakInput.prototype = $.bit('input');
 
+    BotSpeakForm = function (ctx) {
+        var $this, active;
+        $this = this;
+        this.init(ctx);
+        active = ctx.data('active');
+        this.params.content_ = 'speak here';
+        this.model = {
+            'speak-input': {
+                child: function () {
+                    return new BotSpeakInput(ctx, 'text');
+                }
+            },
+            'speak-password': {
+                child: function () {
+                    return new BotSpeakInput(ctx, 'password');
+                }
+            }
+        };
 
-    var BotSpeakForm = function(ctx){
-	this.init(ctx);
-	var $this = this;
-	this.params['content_'] = 'speak here';
-	this.model = {'speak-input':{child:  function(){return new BotSpeakInput(ctx,'text')}}
-		      ,'speak-password':{child:  function(){return new BotSpeakInput(ctx,'password')}}};
-	this.after_add = function()
-	{
-	    //console.log($this.kids['speak-input']);
-	    $this.kids['speak-password'].hide()
-	}
-	ctx.signal('listen','ask-password', function()
-		   {
-		       $this.kids['speak-input'].hide()
-		       $this.kids['speak-password'].show()		       
-		       $this.kids['speak-password'].element.focus()
-		   })
-	ctx.signal('listen','speak-password', function()
-		   {
-		       $this.kids['speak-input'].show()
-		       $this.kids['speak-password'].hide()
-		       $this.kids['speak-input'].element.focus()
-		   })
+        this.after_add = function () {
+            //console.log($this.kids['speak-input']);
+            $this.kids['speak-password'].hide();
+        };
+
+        ctx.signal('listen', 'ask-password', function () {
+            $this.kids['speak-input'].hide();
+            $this.kids['speak-password'].show();
+            $this.kids['speak-password'].element.focus();
+        });
+
+        ctx.signal('listen', 'speak-password', function () {
+            $this.kids['speak-input'].show();
+            $this.kids['speak-password'].hide();
+            $this.kids['speak-input'].element.focus();
+        });
     };
-    BotSpeakForm.prototype = $.bit('form')
+    BotSpeakForm.prototype = $.bit('form');
 
-
-    var BotSpeak = function(ctx){
-	this.init(ctx);
-	var $this = this;
-	this.model = {'speak-form':{child:  function(){return new BotSpeakForm(ctx)}}}
+    BotSpeak = function (ctx) {
+        var $this;
+        $this = this;
+        this.init(ctx);
+        this.model = {
+            'speak-form': {
+                child: function () {
+                    return new BotSpeakForm(ctx);
+                }
+            }
+        };
     };
-    BotSpeak.prototype = $.bit('widget')
+    BotSpeak.prototype = $.bit('widget');
 
-    var BotButton = function(ctx){
-	this.init(ctx);
-	var $this = this;
-	this.params['class_'] = 'bot-button'
+    BotButton = function (ctx) {
+        this.params.class_ = 'bot-button';
     };
-    BotButton.prototype = $.bit('button')
+    BotButton.prototype = $.bit('button');
 
-
-    var BotContent = function(ctx,contentid){
-	this.init(ctx);
-	var $this = this;
-	this.params['content_'] = contentid
-	this.params['class_'] = 'bot-content'
-	//this.ctx.data('active').widgets['bit.bot.shell'] = year+':'+month
-	
+    BotContent = function (ctx, contentid) {
+        var $this;
+        $this = this;
+        this.init(ctx);
+        this.params.content_ = contentid;
+        this.params.class_ = 'bot-content';
+        //this.ctx.data('active').widgets['bit.bot.shell'] = year + ':' + month        
     };
-    BotContent.prototype = $.bit('widget')
+    BotContent.prototype = $.bit('widget');
 
-    var Bot = function(ctx){
-	this.init(ctx);
-	var $this = this;
-	this.model = {'bot-button':{child:  function(){return new BotButton(ctx)}}}
-	ctx.signal('listen', 'close-sessions', function(resp)
-		   {		       
-		       console.log('CLOSING SESSIONS')
-		       for (var kid in $this.kids)
-		       {
-			   if (kid != 'bot-button')
-			       $this.destroy(kid)
-		       }
-		   })
-	ctx.signal('listen', 'close-session', function(resp)
-		   {		      
-		       
-		       if (resp in $this.kids)
-		       {
-			   $this.destroy(resp)
-		       }
-		   })
-	ctx.signal('listen', 'show-content', function(resp)
-		   {
-		       $this.kids['bot-button'].hide();
-		       var parts = resp.split('-')
-		       var rtype = parts.shift()
-		       $this.add(parts[0]
-				 ,$.bit('plugins').plugins()['bit.bot.'+rtype]
-				 .load_activity(ctx,parts[0]))
-		       ctx.signal('emit','open-content',parts[0])
-		   })
-	ctx.signal('listen', 'toggle-content', function(resp)		   
-		   {		       
-		       var target = $this.kids[resp];
-		       if(target.hidden())
-		       {
-			   target.show()
-			   for (var kid in $this.kids)
-			   {
-			       if (kid != resp)
-				   $this.kids[kid].hide();
-			   }
-			   ctx.signal('emit','activity-changed',resp)
-		       } else {
-			   target.hide()
-			   ctx.signal('emit','activity-changed')
-		       }
+    Bot = function (ctx) {
+        var $this;
+        $this = this;
+        this.init(ctx);
+        this.model = {
+            'bot-button': {
+                child: function () {
+                    return new BotButton(ctx);
+                }
+            }
+        };
 
-		   })
-	ctx.signal('listen', 'open-content', function(resp)		   
-		   {		       
-		       var target = $this.kids[resp];
-		       target.show()
-		       for (var kid in $this.kids)
-		       {
-			   if (kid != resp)
-			       $this.kids[kid].hide();
-		       }
-		       ctx.signal('emit','activity-changed',resp)
-		   })
-	ctx.signal('listen', 'hide-content', function(resp)		   
-		   {		       
-		       var target = $this.kids[resp];
-		       target.hide()
-		       ctx.signal('emit','activity-changed',null)
-		   })
+        ctx.signal('listen', 'close-sessions', function (resp) {
+            var kid, i;
+            console.log('CLOSING SESSIONS');
+            for (i = 0; i === $this.kids.length; i += 1) {
+                kid = $this.kids[i];
+                if (kid !== 'bot-button') {
+                    $this.destroy(kid);
+                }
+            }
+        });
+
+        ctx.signal('listen', 'close-session', function (resp) {
+            if ($this.kids[resp]) {
+                $this.destroy(resp);
+            }
+        });
+
+        ctx.signal('listen', 'show-content', function (resp) {
+            var parts, rtype;
+            $this.kids['bot-button'].hide();
+            parts = resp.split('-');
+            rtype = parts.shift();
+            $this.add(parts[0],
+                      $.bit('plugins').plugins()['bit.bot.' + rtype]
+                      .load_activity(ctx, parts[0]));
+            ctx.signal('emit', 'open-content', parts[0]);
+        });
+
+        ctx.signal('listen', 'toggle-content', function (resp) {
+            var target, kid, i;
+            target = $this.kids[resp];
+            if (target.hidden()) {
+                target.show();
+                for (i = 0; i === $this.kids.length; i += 1) {
+                    kid = $this.kids[i];
+                    if (kid !== resp) {
+                        $this.kids[kid].hide();
+                    }
+                }
+                ctx.signal('emit', 'activity-changed', resp);
+            } else {
+                target.hide();
+                ctx.signal('emit', 'activity-changed');
+            }
+        });
+
+        ctx.signal('listen', 'open-content', function (resp) {
+            var target, kid, i;
+            target = $this.kids[resp];
+            target.show();
+            for (i = 0; i === $this.kids.length; i += 1) {
+                kid = $this.kids[i];
+                if (kid !== resp) {
+                    $this.kids[kid].hide();
+                }
+            }
+            ctx.signal('emit', 'activity-changed', resp);
+        });
+
+        ctx.signal('listen', 'hide-content', function (resp) {
+            var target;
+            target = $this.kids[resp];
+            target.hide();
+            ctx.signal('emit', 'activity-changed', null);
+        });
     };
-    Bot.prototype = $.bit('widget')
+    Bot.prototype = $.bit('widget');
 
-    var BotFeet = function(ctx){
-	this.init(ctx);
-	var $this = this;
-	this.model['bot-status'] = {child:  function(){return new BotStatus(ctx)}}
-	this.model['bot-content-buttons'] = {child:  function(){return new BotContentButtons(ctx)}}
-	//this.ctx.data('active').widgets['bit.bot.shell'] = year+':'+month
+    BotFeet = function (ctx) {
+        var $this;
+        this.init(ctx);
+        $this = this;
+        this.model['bot-status'] = {
+            child: function () {
+                return new BotStatus(ctx);
+            }
+        };
+
+        this.model['bot-content-buttons'] = {
+            child: function () {
+                return new BotContentButtons(ctx);
+            }
+        };
+        //this.ctx.data('active').widgets['bit.bot.shell'] = year + ':' + month
     };
-    BotFeet.prototype = $.bit('widget')
+    BotFeet.prototype = $.bit('widget');
 
+    BotBrain = function (ctx) {
+        var $this, activity_menus, closer, fullscreen, menus, a_menu, a_menu_print, a_menu_quit;
+        $this = this;
+        this.init(ctx);
+        activity_menus = $.bit('widget').init(ctx);
+        closer = $.bit('button').init(ctx);
+        closer.kontent = 'CLOSE!';
+        closer.subtype = 'image';
+        closer.src = '/images/close.png';
+        closer.added = function () {
+            closer.$.click(function (evt) {
+                var session;
+                evt.preventDefault();
+                session = closer.$.attr('href').replace('#', '');
+                ctx.signal('emit', 'transmit', ['close-session', [session]]);
+                ctx.signal('emit', 'close-session', session);
+            });
+        };
+        fullscreen = $.bit('button').init(ctx);
+        fullscreen.kontent = 'CLOSE!';
+        fullscreen.subtype = 'image';
+        fullscreen.src = '/images/fullscreen.png';
+        fullscreen.added = function () {
+            fullscreen.$.click(function (evt) {
+                var session;
+                evt.preventDefault();
+                session = fullscreen.$.attr('href').replace('#', '');
+                //$this.$[0].mozRequestFullScreen()
+                ctx.signal('emit', 'show-fullscreen', session);
+            });
+        };
 
-    var BotBrain = function(ctx){
-	this.init(ctx);
-	var $this = this;	
-	var activity_menus = $.bit('widget').init(ctx);
+        activity_menus.model.fullscreen = {
+            child: function () {
+                return fullscreen;
+            }
+        };
 
-	var closer = $.bit('button').init(ctx);
-	closer.kontent = 'CLOSE!'
-	closer.subtype = 'image'
-	closer.src = '/images/close.png'
-	var fullscreen = $.bit('button').init(ctx);
-	closer.added = function(){
-	    closer.$.click(function(evt){
-		evt.preventDefault()
-		var session = closer.$.attr('href').replace('#','')
-		ctx.signal('emit','transmit',['close-session',[session,]])
-		ctx.signal('emit','close-session',session)
-	    })
-	}
-	var fullscreen = $.bit('button').init(ctx);
-	fullscreen.kontent = 'CLOSE!'
-	fullscreen.subtype = 'image'
-	fullscreen.src = '/images/fullscreen.png'
-	fullscreen.added = function(){
-	    fullscreen.$.click(function(evt){
-		evt.preventDefault()
-		var session = fullscreen.$.attr('href').replace('#','')
-		//$this.$[0].mozRequestFullScreen()
-		ctx.signal('emit','show-fullscreen',session)
-	    })
-	}
-	activity_menus.model['fullscreen'] = {child: function(){return fullscreen}}	
-	activity_menus.model['closer'] = {child: function(){return closer}}	
+        activity_menus.model.closer = {
+            child: function () {
+                return closer;
+            }
+        };
 
-	var menus = $.bit('menus').init(ctx);
+        menus = $.bit('menus').init(ctx);
+        a_menu =  $.bit('menu').init(ctx);
+        a_menu.title = 'Activity';
 
-	var a_menu =  $.bit('menu').init(ctx);
-	a_menu.title = 'Activity'
+        a_menu_print =  $.bit('menu_item').init(ctx);
+        a_menu_print.title = 'Print';
+        a_menu_quit =  $.bit('menu_item').init(ctx);
+        a_menu_quit.title = 'Quit';
+        a_menu.items.a_menu_print = {
+            child: function () {
+                return a_menu_print;
+            }
+        };
+        a_menu.items.a_menu_quit = {
+            child: function () {
+                return a_menu_quit;
+            }
+        };
 
-	var a_menu_print =  $.bit('menu_item').init(ctx);
-	a_menu_print.title = 'Print'	    
-	var a_menu_quit =  $.bit('menu_item').init(ctx);
-	a_menu_quit.title = 'Quit'	    
-	
-	a_menu.items['a_menu_print'] = {child: function(){return a_menu_print}}
-	a_menu.items['a_menu_quit'] = {child: function(){return a_menu_quit}}
+        menus.model.a_menu = {
+            child: function () {
+                return a_menu;
+            }
+        };
 
-	menus.model['a_menu'] = {child: function(){return a_menu}}
+        activity_menus.added = function () {
+            activity_menus.hide();
+            ctx.signal('listen', 'close-session', function (resp) {
+                if (resp) {
+                    if (resp === fullscreen.$.attr('href').replace('#', '')) {
+                        activity_menus.hide();
+                    }
+                    menus.hide();
+                }
+            });
 
-	activity_menus.added = function(){	
-	    activity_menus.hide()
-	    ctx.signal('listen','close-session', function(resp)
-		       {		       		
-			   if (resp){
-			       if (resp == fullscreen.$.attr('href').replace('#',''))
-				   activity_menus.hide()
-			       menus.hide();
-			   }
-		       })
-	    ctx.signal('listen','activity-changed', function(resp)
-		       {		       		
-			   if (resp){
-			       closer.$.attr('href','#'+resp)
-			       fullscreen.$.attr('href','#'+resp)
-			       activity_menus.show()
-			       menus.show()
-			   } else {
-			       closer.$.attr('href','#')
-			       fullscreen.$.attr('href','#')
-			       activity_menus.hide()
-			       menus.hide()
-			   }
-		       })
-	    ctx.signal('listen','show-content', function(resp)
-		       {		       	
-			   var parts = resp.split('-')	       
-			   var rtype = parts.shift()
-			   $.bit('plugins').plugins()['bit.bot.'+rtype]
-			       .load_activity_menus(ctx,parts.pop(),menus)
-			   $this.add('plugin-activity-menus',menus)
-			   activity_menus.show()
-		       })	
-	}
-	this.model = {'bot-speak-button':{child:  function(){return new BotSpeakButton(ctx)}}
-		      ,'bot-speak':{child:  function(){return new BotSpeak(ctx)}}
-		      ,'person-status':{child:  function(){return new BotAuthStatusButton(ctx)}}
-		      ,'activity-menus':{child:  function(){return activity_menus}}
-		      ,'bot-listen-button':{child:  function(){return new BotListenButton(ctx)}}}
-	
-	//this.ctx.data('active').widgets['bit.bot.shell'] = year+':'+month
+            ctx.signal('listen', 'activity-changed', function (resp) {
+                if (resp) {
+                    closer.$.attr('href', '#' + resp);
+                    fullscreen.$.attr('href', '#' + resp);
+                    activity_menus.show();
+                    menus.show();
+                } else {
+                    closer.$.attr('href', '#');
+                    fullscreen.$.attr('href', '#');
+                    activity_menus.hide();
+                    menus.hide();
+                }
+            });
+
+            ctx.signal('listen', 'show-content', function (resp) {
+                var parts, rtype;
+                parts = resp.split('-');
+                rtype = parts.shift();
+                $.bit('plugins').plugins()['bit.bot.' + rtype]
+                    .load_activity_menus(ctx, parts.pop(), menus);
+                $this.add('plugin-activity-menus', menus);
+                activity_menus.show();
+            });
+        };
+
+        this.model = {
+            'bot-speak-button': {
+                child: function () {
+                    return new BotSpeakButton(ctx);
+                }
+            },
+            'bot-speak': {
+                child: function () {
+                    return new BotSpeak(ctx);
+                }
+            },
+            'person-status': {
+                child: function () {
+                    return new BotAuthStatusButton(ctx);
+                }
+            },
+            'activity-menus': {
+                child: function () {
+                    return activity_menus;
+                }
+            },
+            'bot-listen-button': {
+                child: function () {
+                    return new BotListenButton(ctx);
+                }
+            }
+        };
+        //this.ctx.data('active').widgets['bit.bot.shell'] = year + ':' + month
     };
-    BotBrain.prototype = $.bit('widget')
+    BotBrain.prototype = $.bit('widget');
 
-    var BotChatSpeaker = function(ctx,name){
-	this.init(ctx);
-	var $this = this;
-	if (name == 'bot')
-	    this.model = {'speaker-icon':{child:  function(){
-		var icon =  new BotIcon(ctx)
-		icon.params['src'] = '/images/curate-icon-small.png'
-		return icon;
-	    }}}
-	else if (name == 'user')
-	    this.model = {'speaker-icon':{child:  function() {
-		var icon = new BotIcon(ctx)
-		var active = ctx.data('active')
-		if (active.person)
-		    icon.params['src'] = '/images/trinity-person.png'		    
-		else
-		    icon.params['src'] = '/images/person.png'
-		return icon
-	    }}}
-	//this.ctx.data('active').widgets['bit.bot.shell'] = year+':'+month
+    BotChatSpeaker = function (ctx, name) {
+        var $this;
+        $this = this;
+        this.init(ctx);
+        if (name === 'bot') {
+            this.model = {
+                'speaker-icon': {
+                    child: function () {
+                        var icon;
+                        icon =  new BotIcon(ctx);
+                        icon.params.src = '/images/curate-icon-small.png';
+                        return icon;
+                    }
+                }
+            };
+        } else if (name === 'user') {
+            this.model = {
+                'speaker-icon': {
+                    child: function () {
+                        var icon, active;
+                        icon = new BotIcon(ctx);
+                        active = ctx.data('active');
+                        if (active.person) {
+                            icon.params.src = '/images/trinity-person.png';
+                        } else {
+                            icon.params.src = '/images/person.png';
+                        }
+                        return icon;
+                    }
+                }
+            };
+        }
+        //this.ctx.data('active').widgets['bit.bot.shell'] = year + ':' + month
     };
-    BotChatSpeaker.prototype = $.bit('widget')
+    BotChatSpeaker.prototype = $.bit('widget');
 
-    var BotChatResponseLine = function(ctx,msg){
-	this.init(ctx);
-	var $this = this;
-	function text_to_link(text)
-	{
-	    var exp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
-	    return text.replace(exp,"<a href='$1' target='_blank'>$1</a>");
-	}
-	this.params['content_'] = text_to_link(msg);
+    BotChatResponseLine = function (ctx, msg) {
+        var $this;
+        $this = this;
+        this.init(ctx);
+        function text_to_link(text) {
+            var exp;
+            exp = "/(\b(https?|ftp|file):\/\/[-A-Z0-9 + &@#\/%?=~_|!:, .;]*[-A-Z0-9 + &@#\/%=~_|])/ig";
+            return text.replace(exp, "<a href='$1' target='_blank'>$1</a>");
+        }
+        this.params.content_ = text_to_link(msg);
     };
-    BotChatResponseLine.prototype = $.bit('widget')
+    BotChatResponseLine.prototype = $.bit('widget');
 
-    var BotChatResponseSpeech = function(ctx,speaker,msg){
-	this.init(ctx);
-	var $this = this;
-	var lines = msg.split('\n');
-	this.params['class_'] = 'speech-bubble'
-	this.model = {};
-	this.model['speaker'] = {child:  function(_line){return new BotChatSpeaker(ctx,speaker)}
-					    ,args: [lines[line]]}
-	for (var line in lines)
-	{
-	    this.model['bot-line-'+line] = {child:  function(_line){return new BotChatResponseLine(ctx,_line)}
-					    ,args: [lines[line],]}
-	}
+    BotChatResponseSpeech = function (ctx, speaker, msg) {
+        var $this, lines, line, chat_response, i;
+        $this = this;
+        this.init(ctx);
+        lines = msg.split('\n');
+        this.params.class_ = 'speech-bubble';
+        this.model = {};
 
+        this.model.speaker = {
+            child: function (_line) {
+                return new BotChatSpeaker(ctx, speaker);
+            },
+            args: [lines[line]]
+        };
+
+        chat_response = function (_line) {
+            return new BotChatResponseLine(ctx, _line);
+        };
+
+        for (i = 0; i === lines.length; i += 1) {
+            line = lines[i];
+            this.model['bot-line-' + line] = {
+                child: chat_response,
+                args: [lines[line]]
+            };
+        }
     };
-    BotChatResponseSpeech.prototype = $.bit('widget')
+    BotChatResponseSpeech.prototype = $.bit('widget');
 
-    var BotChatResponseSpeechTail = function(ctx){
-	this.init(ctx);
-	var $this = this;
+    BotChatResponseSpeechTail = function (ctx) {
+        var $this;
+        this.init(ctx);
+        $this = this;
     };
-    BotChatResponseSpeechTail.prototype = $.bit('widget')
+    BotChatResponseSpeechTail.prototype = $.bit('widget');
 
-    var BotChatResponse = function(ctx,speaker,msg){
-	this.init(ctx);
-	var $this = this;
-	var lines = msg.split('\n');
-	this.params['class_'] = 'say-'+speaker
-	this.model = {}
-	if (speaker=='bot')
-	    this.model['response-speech-tail-bot'] = {child:  function(){return new BotChatResponseSpeechTail(ctx)}}
-	this.model['response-speech'] = {child:  function(){return new BotChatResponseSpeech(ctx,speaker,msg)}}
-	if (speaker=='user')
-	    this.model['response-speech-tail-person'] = {child:  function(){return new BotChatResponseSpeechTail(ctx)}}
+    BotChatResponse = function (ctx, speaker, msg) {
+        var $this, lines;
+        $this = this;
+        this.init(ctx);
+        lines = msg.split('\n');
+        this.params.class_ = 'say-' + speaker;
+        this.model = {};
+        if (speaker === 'bot') {
+            this.model['response-speech-tail-bot'] = {
+                child: function () {
+                    return new BotChatResponseSpeechTail(ctx);
+                }
+            };
+        }
+
+        this.model['response-speech'] = {
+            child:  function () {
+                return new BotChatResponseSpeech(ctx, speaker, msg);
+            }
+        };
+        if (speaker === 'user') {
+            this.model['response-speech-tail-person'] = {
+                child:  function () {
+                    return new BotChatResponseSpeechTail(ctx);
+                }
+            };
+        }
     };
-    BotChatResponse.prototype = $.bit('list_item')
+    BotChatResponse.prototype = $.bit('list_item');
 
+    BotThought = function (ctx, speaker, msg) {
+        var $this, lines, line, chat_response_line, i;
+        $this = this;
+        this.init(ctx);
+        lines = msg.split('\n');
+        this.params.class_ = 'thought-bubble hidden';
 
-    var BotThought = function(ctx,speaker,msg){
-	this.init(ctx);
-	var $this = this;
-	var lines = msg.split('\n');
-	this.params['class_'] = 'thought-bubble hidden'
-	this.model = {};
-	for (var line in lines)
-	{
-	    this.model['bot-line-'+line] = {child:  function(_line){return new BotChatResponseLine(ctx,_line)}
-					    ,args: [lines[line],]}
-	}
+        chat_response_line = function (_line) {
+            return new BotChatResponseLine(ctx, _line);
+        };
 
+        this.model = {};
+        for (i = 0; i === lines.length; i += 1) {
+            line = lines[i];
+            this.model['bot-line-' + line] = {
+                child: chat_response_line,
+                args: [lines[line]]
+            };
+        }
     };
-    BotThought.prototype = $.bit('widget')
+    BotThought.prototype = $.bit('widget');
 
+    EventMessage = function (ctx, type, msg) {
+        var $this, lines, line;
+        $this = this;
+        this.init(ctx);
+        lines = msg.split('\n');
+        this.params.class_ = 'event-' + type;
+        this.model = {};
+        this.model.short_thought = {
+            args: [msg],
+            child:  function (_m) {
+                var title = $.bit('title').init(ctx);
+                title.params.type = 'h3';
+                title.model.title_link = {
+                    args: [_m],
+                    child:  function (_msg) {
+                        var title_link;
+                        title_link = $.bit('link').init(ctx);
+                        title_link.after_add = function () {
+                            this.$.click(function (evt) {
+                                evt.preventDefault();
+                                $this.kids.thought.toggle('hidden');
+                            });
+                        };
+                        title_link.params.content_ = _msg.slice(0, 23) + '...';
+                        return title_link;
+                    }
+                };
+                return title;
+            }
+        };
 
-    var EventMessage = function(ctx,type,msg){
-	this.init(ctx);
-	var $this = this;
-	var lines = msg.split('\n');
-	this.params['class_'] = 'event-'+type
-	this.model = {}
-	this.model['short_thought'] = { args: [msg,]
-					,child:  function(_m){
-					    var title = $.bit('title').init(ctx)
-					    title.params['type'] = 'h3'
-					    title.model['title_link'] = { args: [_m,]
-								     ,child:  function(_msg){
-									 var title_link = $.bit('link').init(ctx)
-									 title_link.after_add = function(){
-									     this.$.click(function(evt)
-											  {
-											      evt.preventDefault();
-											      $this.kids['thought'].toggle('hidden')
-											  })
-									 }
-									 title_link.params['content_'] = _msg.slice(0,23)+'...'	
-									 return title_link
-								     }
-								   }
-					    return title
-					}}
-	this.model['thought'] = {child:  function(){return new BotThought(ctx,type,msg)}}
+        this.model.thought = {
+            child: function () {
+                return new BotThought(ctx, type, msg);
+            }
+        };
     };
-    EventMessage.prototype = $.bit('list_item')
+    EventMessage.prototype = $.bit('list_item');
 
-    var BotEvents = function(ctx){
-	this.init(ctx);
-	var $this = this;
-	var i=0;
-	var add_event = function(resp){
-	    $this.add('event-'+i
-		      , new EventMessage(ctx,'admin',resp)
-		      , $this.$
-		      , null
-		      , 0
-		     )
-	    i++;
-	}
-	ctx.signal('listen', 'bot-listen', function(msg) {
-	    add_event(msg)
-	})
-	return
+    BotEvents = function (ctx) {
+        var $this, i, add_event;
+        this.init(ctx);
+        $this = this;
+        i = 0;
+        add_event = function (resp) {
+            $this.add('event-' + i,
+                      new EventMessage(ctx, 'admin', resp),
+                      $this.$,
+                      null,
+                      0);
+            i += 1;
+        };
+
+        ctx.signal('listen', 'bot-listen', function (msg) {
+            add_event(msg);
+        });
     };
-    BotEvents.prototype = $.bit('list')
+    BotEvents.prototype = $.bit('list');
 
-    var BotChat = function(ctx){
-	this.init(ctx);
-	var $this = this;
-	var i = 0;
-	ctx.signal('listen', 'close-sessions', function(resp)
-		   {		       
-		       for (var kid in $this.kids)
-		       {
-			   $this.destroy(kid)
-		       }
-		   })
+    BotChat = function (ctx) {
+        var $this, i;
+        this.init(ctx);
+        $this = this;
+        i = 0;
+        ctx.signal('listen', 'close-sessions', function (resp) {
+            var kid, i;
+            for (i = 0; i === $this.kids.length; i += 1) {
+                kid = $this.kids[i];
+                $this.destroy(kid);
+            }
+        });
 
-	ctx.signal('listen', 'speak', function(resp)
-		   {
-		       ctx.signal('emit', 'open-panel', 'west')
-		       $this.add('response-'+i
-				 , new BotChatResponse(ctx,'user',resp)
-				 , $this.$
-				 , null
-				 , 0
-				)
-		   })
+        ctx.signal('listen', 'speak', function (resp) {
+            ctx.signal('emit', 'open-panel', 'west');
+            $this.add('response-' + i,
+                      new BotChatResponse(ctx, 'user', resp),
+                      $this.$,
+                      null,
+                      0);
+        });
 
-
-	ctx.signal('listen', 'respond', function(resp)
-		   {
-		       if (!resp) return
-		       if (resp == 'What is your password?')
-			   ctx.signal('emit', 'ask-password')			   
-		       ctx.signal('emit', 'open-panel', 'west')
-		       //$this.debug = true;
-		       $this.add('response-'+i
-				 , new BotChatResponse(ctx,'bot',resp)
-				 , $this.$
-				 , null
-				 , 0
-				)
-
-		   })
-
-
+        ctx.signal('listen', 'respond', function (resp) {
+            if (resp) {
+                if (resp === 'What is your password?') {
+                    ctx.signal('emit', 'ask-password');
+                }
+                ctx.signal('emit', 'open-panel', 'west');
+                $this.add('response-' + i,
+                          new BotChatResponse(ctx, 'bot', resp),
+                          $this.$,
+                          null,
+                          0);
+            }
+        });
     };
-    BotChat.prototype = $.bit('list')
+    BotChat.prototype = $.bit('list');
 
-    var BotEarLeft = function(ctx){
-	this.init(ctx);
-	var $this = this;
-	this.model = {'bot-chat':{child:  function(){return new BotChat(ctx)}}}
-	//this.ctx.data('active').widgets['bit.bot.shell'] = year+':'+month
+    BotEarLeft = function (ctx) {
+        var $this;
+        this.init(ctx);
+        $this = this;
+        this.model = {
+            'bot-chat': {
+                child: function () {
+                    return new BotChat(ctx);
+                }
+            }
+        };
+        //this.ctx.data('active').widgets['bit.bot.shell'] = year + ':' + month
     };
-    BotEarLeft.prototype = $.bit('widget')
+    BotEarLeft.prototype = $.bit('widget');
 
-    var BotEarRight = function(ctx){
-	this.init(ctx);
-	var $this = this;
-	this.model = {'bot-events':{child:  function(){return new BotEvents(ctx)}}}
+    BotEarRight = function (ctx) {
+        var $this;
+        $this = this;
+        this.init(ctx);
+        this.model = {
+            'bot-events': {
+                child: function () {
+                    return new BotEvents(ctx);
+                }
+            }
+        };
     };
-    BotEarRight.prototype = $.bit('widget')
-   	
-    var PanelBot = function(ctx){
-	this.init(ctx);
-	var $this = this;
-	this.model = {'bot':{child:  function(){return new Bot(ctx)}}}
+    BotEarRight.prototype = $.bit('widget');
+
+    PanelBot = function (ctx) {
+        var $this;
+        $this = this;
+        this.init(ctx);
+        this.model = {
+            'bot': {
+                child: function () {
+                    return new Bot(ctx);
+                }
+            }
+        };
     };
-    PanelBot.prototype = $.bit('panel')
+    PanelBot.prototype = $.bit('panel');
 
-    var PanelBotBrain = function(ctx){
-	this.init(ctx);
-	var $this = this;
-	this.model = {'bot-brain':{child:  function(){return new BotBrain(ctx)}}}
+    PanelBotBrain = function (ctx) {
+        var $this;
+        $this = this;
+        this.init(ctx);
+        this.model = {
+            'bot-brain': {
+                child: function () {
+                    return new BotBrain(ctx);
+                }
+            }
+        };
     };
-    PanelBotBrain.prototype = $.bit('panel')
+    PanelBotBrain.prototype = $.bit('panel');
 
-    var PanelBotFeet = function(ctx){
-	this.init(ctx);
-	var $this = this;
-	this.model = {'bot-feet':{child:  function(){return new BotFeet(ctx)}}}
+    PanelBotFeet = function (ctx) {
+        var $this;
+        $this = this;
+        this.init(ctx);
+        this.model = {
+            'bot-feet': {
+                child:  function () {
+                    return new BotFeet(ctx);
+                }
+            }
+        };
     };
-    PanelBotFeet.prototype = $.bit('panel')
+    PanelBotFeet.prototype = $.bit('panel');
 
-    var PanelBotEarLeft = function(ctx){
-	this.init(ctx);
-	var $this = this;
-	this.model = {'bot-mini':{child:  function(){return new BotEarLeft(ctx)}}}
+    PanelBotEarLeft = function (ctx) {
+        var $this;
+        $this = this;
+        this.init(ctx);
+        this.model = {
+            'bot-mini': {
+                child: function () {
+                    return new BotEarLeft(ctx);
+                }
+            }
+        };
     };
-    PanelBotEarLeft.prototype = $.bit('panel')
+    PanelBotEarLeft.prototype = $.bit('panel');
 
-    var PanelBotEarRight = function(ctx){
-	this.init(ctx);
-	var $this = this;
-	this.model = {'bot-right':{child:  function(){return new BotEarRight(ctx)}}}
+    PanelBotEarRight = function (ctx) {
+        var $this;
+        $this = this;
+        this.init(ctx);
+        this.model = {
+            'bot-right': {
+                child: function () {
+                    return new BotEarRight(ctx);
+                }
+            }
+        };
     };
-    PanelBotEarRight.prototype = $.bit('panel')
+    PanelBotEarRight.prototype = $.bit('panel');
 
-    var BitBot = {
-	init: function(option)
-	{
-	    return this;
-	},
-	activity: 'bot',
-	plugin: 'base',
-	template_url: '/jplates/jtk-elements.html',
-	templates: {},
-//	templates: {'http://localhost:8080/bitonomy/jtk-elements.html':['jtk-panel','jtk-widget','jtk-title'
-//									, 'jtk-list', 'jtk-list-item', 'jtk-link'
-//									,'jtk-button', 'jtk-image']},    
+    BitBot = {
+        init: function (option) {
+            return this;
+        },
+        activity: 'bot',
+        plugin: 'base',
+        template_url: '/jplates/jtk-elements.html',
+        templates: {},
+//      templates: {'http://localhost:8080/bitonomy/jtk-elements.html':['jtk-panel', 'jtk-widget', 'jtk-title'
+//                                                                      , 'jtk-list', 'jtk-list-item', 'jtk-link'
+//                                                                      , 'jtk-button', 'jtk-image']},   
+        renderCenter: function (ctx, element, cb) {
+            var cbelement;
+            if (!element.has_child('bot')) {
+                //console.log('adding center panel')
+                cbelement = function (res) {
+                    //console.log('added center panel')
+                    if (cb) {
+                        cb();
+                    }
+                };
+                element.add('bot-panel',
+                            new PanelBot(ctx),
+                            element.element, cbelement);
+            } else {
+                element.kids.bot.update();
+            }
+        },
 
-	renderCenter: function(ctx,element,cb)
-	{
+        renderTop: function (ctx, element, cb) {
+            var cbelement;
+            if (!element.has_child('bot-brain')) {
+                //console.log('adding top panel')
+                cbelement = function (res) {
+                    //console.log('added top panel')
+                    if (cb) {
+                        cb();
+                    }
+                };
+                element.add('bot-brain',
+                            new PanelBotBrain(ctx),
+                            element.element, cbelement);
+            } else {
+                element.kids['bot-brain'].update();
+            }
+        },
 
-	    if (!element.has_child('bot'))
-	    {		
-		//console.log('adding center panel')
-		var cbelement = function(res)
-		{
-		    //console.log('added center panel')
-		    if (cb) cb()		    
-		}		
-		element.add('bot-panel'
-			,new PanelBot(ctx)
-			,element.element, cbelement)
-	    } else
-		element.kids['bot'].update()
-	    
-	},
+        renderLeft: function (ctx, element, cb) {
+            var cbelement;
+            if (!element.has_child('bot-ear-left')) {
+                //console.log('adding top panel')
+                cbelement = function (res) {
+                    //console.log('added top panel')
+                    if (cb) {
+                        cb();
+                    }
+                };
+                element.add('bot-ear-left',
+                            new PanelBotEarLeft(ctx),
+                            element.element, cbelement);
+            } else {
+                element.kids['bot-ear-left'].update();
+            }
+        },
 
-	renderTop: function(ctx,element,cb)
-	{
-	    if (!element.has_child('bot-brain'))
-	    {		
-		//console.log('adding top panel')
-		var cbelement = function(res)
-		{
-		    //console.log('added top panel')
-		    if (cb) cb()
-		}		
-		element.add('bot-brain'
-			,new PanelBotBrain(ctx)
-			,element.element, cbelement)
-	    } else
-		element.kids['bot-brain'].update()
-	    
+        renderBottom: function (ctx, element, cb) {
+            var cbelement;
+            if (!element.has_child('bot-feet')) {
+                //console.log('adding top panel')
+                cbelement = function (res) {
+                    //console.log('added top panel')
+                    if (cb) {
+                        cb();
+                    }
+                };
+                element.add('bot-feet',
+                            new PanelBotFeet(ctx),
+                            element.element, cbelement);
+            } else {
+                element.kids['bot-feet'].update();
+            }
+        },
 
-	},
+        renderRight: function (ctx, element, cb) {
+            var cbelement;
+            if (!element.has_child('bot-ear-right')) {
+                //console.log('adding top panel')
+                cbelement = function (res) {
+                    //console.log('added top panel')
+                    if (cb) {
+                        cb();
+                    }
+                };
+                element.add('bot-ear-right',
+                            new PanelBotEarRight(ctx),
+                            element.element, cbelement);
+            } else {
+                element.kids['bot-ear-right'].update();
+            }
+        },
 
-	renderLeft: function(ctx,element,cb)
-	{
-	    if (!element.has_child('bot-ear-left'))
-	    {		
-		//console.log('adding top panel')
-		var cbelement = function(res)
-		{
-		    //console.log('added top panel')
-		    if (cb) cb()
-		}		
-		element.add('bot-ear-left'
-			,new PanelBotEarLeft(ctx)
-			,element.element, cbelement)
-	    } else
-		element.kids['bot-ear-left'].update()	    
+        updateFrame: function (ctx, cb) {
+            var content, _cb, counter, sides, side, i;
+            content = ctx.data('frame').kids['content-panel'];
+            //console.log(cb)
+            _cb = function () {
+                counter -= 1;
+                if (counter === 0) {
+                    //console.log('frame panels loaded')
+                    if (cb) {
+                        cb();
+                    }
+                }
+            };
+            counter = 4;
+            sides = {
+                north: this.renderTop,
+                west: this.renderLeft,
+                center: this.renderCenter,
+                east: this.renderRight,
+                south: this.renderBottom
+            };
+            for (i = 0; i === sides.length; i += 1) {
+                side = sides[i];
+                try {
+                    sides[side](ctx, content.kids['ui-layout-' + side], _cb);
+                } catch (err) {
+                    console.log(err);
+                }
+            }
+        },
 
-	},
+        renderFrame: function (ctx, cb) {
+            //console.log('loading bitonomy HTML');
+            var $this, counter, panelsLoaded, loadPanels, loadContent;
+            $this = this;
+            counter = 5;
+            panelsLoaded = function (panel) {
+                var layout;
+                counter -= 1;
+                if (counter === 0) {
+                    layout = panel.parent.element.layout({ slidable: true,
+                                                           closable: true,
+                                                           west__resizable: false,
+                                                           west__togglerLength_open: 0,
+                                                           west__togglerLength_closed: 0,
+                                                           west__spacing_open: 0,
+                                                           west__spacing_closed: 0,
+                                                           north__resizable: false,
+                                                           north__closable: false,
+                                                           north__initClosed: false,
+                                                           north__togglerLength_open: 0,
+                                                           north__spacing_open: 0,
+                                                           north__spacing_closed: 0,
+                                                           east__resizable: false,
+                                                           east__initClosed: true,
+                                                           east__togglerLength_open: 0,
+                                                           east__spacing_open: 0,
+                                                           east__spacing_closed: 0,
+                                                           south__resizable: false,
+                                                           south__closable: true,
+                                                           south__initClosed: false,
+                                                           south__togglerLength_open: 200,
+                                                           south__togglerLength_closed: 200,
+                                                           south__spacing_open: 2,
+                                                           south__spacing_closed: 5,
+                                                           initClosed: true});
+                    layout.sizePane('north', 36);
+                    layout.sizePane('south', 36);
+                    layout.sizePane('west',  350);
+                    layout.sizePane('east',  350);
 
-	renderBottom: function(ctx,element,cb)
-	{
-	    if (!element.has_child('bot-feet'))
-	    {		
-		//console.log('adding top panel')
-		var cbelement = function(res)
-		{
-		    //console.log('added top panel')
-		    if (cb) cb()
-		}		
-		element.add('bot-feet'
-			,new PanelBotFeet(ctx)
-			,element.element, cbelement)
-	    } else
-		element.kids['bot-feet'].update()
-	 
-	},
+                    if (cb) {
+                        cb();
+                    }
 
-	renderRight: function(ctx,element,cb)
-	{
-	    if (!element.has_child('bot-ear-right'))
-	    {		
-		//console.log('adding top panel')
-		var cbelement = function(res)
-		{
-		    //console.log('added top panel')
-		    if (cb) cb()
-		}		
-		element.add('bot-ear-right'
-			,new PanelBotEarRight(ctx)
-			,element.element, cbelement)
-	    } else
-		element.kids['bot-ear-right'].update()	    
-	},
+                    ctx.signal('listen', 'close-panel', function (resp) {
+                        layout.close(resp);
+                    });
 
-	updateFrame: function(ctx,cb)
-	{
-	    var content = ctx.data('frame').kids['content-panel']
-	    //console.log(cb)
-	    var _cb = function()
-	    {
-		counter--;
-		if (counter == 0)
-		{
-		    //console.log('frame panels loaded')
-		    if (cb) cb()
-		}
-	    }
-	    var counter=4
-	    var sides = {north:this.renderTop,west:this.renderLeft,center:this.renderCenter,east:this.renderRight,south:this.renderBottom}
-	    for (var side in sides)
-	    {
-		try
-		{
-		    sides[side](ctx,content.kids['ui-layout-'+side],_cb)
-		}
-		catch(err)
-		{
-		    console.log(err)	
-		}
-	    }
-	},
+                    ctx.signal('listen', 'open-panel', function (resp) {
+                        layout.open(resp);
+                    });
 
-	renderFrame: function(ctx,cb) 
-	{
-	    //console.log('loading bitonomy HTML');
-	    var $this = this;
-	    var counter = 5;
-	    var panelsLoaded = function(panel)
-	    {
-		counter--;
-		if (counter == 0)
-		{
-		    var layout = panel.parent.element.layout({ slidable: true
-							       ,closable: true
-							       ,west__resizable: false
-							       ,west__togglerLength_open: 0
-							       ,west__togglerLength_closed: 0
-							       ,west__spacing_open: 0
-							       ,west__spacing_closed: 0
+                    ctx.signal('listen', 'toggle-panel', function (resp) {
+                        //console.log('toggle ' + resp)
+                        layout.toggle(resp);
+                    });
+                }
+            };
 
-							       ,north__resizable: false
-							       ,north__closable: false
-							       ,north__initClosed: false
-							       ,north__togglerLength_open: 0
-							       ,north__spacing_open: 0
-							       ,north__spacing_closed: 0
+            loadPanels = function (panel) {
+                var sides, p, i;
+                sides = ['north', 'east', 'center', 'west', 'south'];
+                for (i = 0; i === sides.length; i += 1) {
+                    p = sides[i];
+                    panel.add('ui-layout-' + sides[p],
+                              $.bit('panel').init(ctx),
+                              panel.element,
+                              panelsLoaded);
+                }
+            };
 
-							       ,east__resizable: false
-							       ,east__initClosed: true
-							       ,east__togglerLength_open: 0
-							       ,east__spacing_open: 0
-							       ,east__spacing_closed: 0
+            loadContent = function (frame) {
+                //console.log('loading content')
+                frame.add('content-panel',
+                          $.bit('panel').init(ctx),
+                          frame.element,
+                          loadPanels);
+            };
 
-							       ,south__resizable: false
-							       ,south__closable: true
-							       ,south__initClosed: false
-							       ,south__togglerLength_open: 200
-							       ,south__togglerLength_closed: 200
-							       ,south__spacing_open: 2
-							       ,south__spacing_closed: 5
-							       ,initClosed: true})
-		    layout.sizePane('north', 36)
-		    layout.sizePane('south', 36)
-		    layout.sizePane('west',  350)
-		    layout.sizePane('east',  350)
-		    if (cb) cb()
-		    ctx.signal('listen', 'close-panel',function(resp)
-			       {
-				   layout.close(resp);
-			       })
+            //console.log('attaching frame')
+            $.bit('frame').attach(ctx, 'bitFrame', loadContent);
+            return this;
+        },
 
-		    ctx.signal('listen', 'open-panel',function(resp)
-			       {
-				   layout.open(resp);
-			       })
-
-		    ctx.signal('listen', 'toggle-panel',function(resp)
-			       {
-				   //console.log('toggle '+resp)
-				   layout.toggle(resp);
-			       })
-		}
-	    }
-	    
-	    var loadPanels = function(panel)
-	    {
-		var sides = ['north','east','center','west','south'];
-		for (var p in sides)
-		{
-			panel.add('ui-layout-'+sides[p]
-				  ,$.bit('panel').init(ctx)
-				  ,panel.element
-				  ,panelsLoaded)
-		}
-	    }		   
-	    var loadContent = function(frame)
-	    {
-		//console.log('loading content')
-		var panel = 
-		frame.add('content-panel'
-			  ,$.bit('panel').init(ctx)
-			  ,frame.element
-			  ,loadPanels);
-	    }
-	    //console.log('attaching frame')
-	    $.bit('frame').attach(ctx,'bitFrame',loadContent);				
-	    return this;
-	},
-	
-	updatePlugin: function(ctx,cb)
-	{
-	    //console.log('updating plugin: bit.'+this.activity+'.'+this.plugin);
-	    var bit = ctx.data('bit');	    
-	    var frame = ctx.data('frame');	    
-	    var active = ctx.data('active');
-
-
-	    var pluginid = this.plugin;
-	    var activity = this.activity;
-	    var counter = 0;
-	    var complete = function()
-	    {
-		counter--;	
-		if (counter == 0)
-		{
-		    //console.log('finished updating plugin '+pluginid)
-		    //console.log(counter)
-		    if (cb) cb()					
-		}
-	    };
-	    
-	},
+        updatePlugin: function (ctx, cb) {
+            var bit, frame, active, pluginid, activity, counter, complete;
+            //console.log('updating plugin: bit.' + this.activity + '.' + this.plugin);
+            bit = ctx.data('bit');
+            frame = ctx.data('frame');
+            active = ctx.data('active');
+            pluginid = this.plugin;
+            activity = this.activity;
+            counter = 0;
+            complete = function () {
+                counter -= 1;
+                if (counter === 0) {
+                    //console.log('finished updating plugin ' + pluginid)
+                    //console.log(counter)
+                    if (cb) {
+                        cb();
+                    }
+                }
+            };
+        }
     };
-
-    $.bit('plugins').register_plugins({'bit.bot.base':BitBot.init()})
-    
-})( jQuery );
-
-
-
-
-
-
-
-
-
-
+    $.bit('plugins').register_plugins({
+        'bit.bot.base': BitBot.init()
+    });
+}(jQuery));

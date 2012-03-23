@@ -187,7 +187,7 @@
                 type: "GET",
                 context: this,
                 success: function (msg) {
-                    var plugin_data, resource_data, parts, part, counter, complete, i, data, resources, res, resid;
+                    var plugin_data, resource_data, parts, part, counter, complete, i, data, resources, res, resid, resource, i2;
                     //console.log('receiving resource data' + activity + '.' + plugin + '.' + path);
                     plugin_data = bit[activity][plugin];
                     resource_data = plugin_data;
@@ -206,7 +206,8 @@
                     if (!(resource_data.data)) {
                         resource_data.data = {};
                     }
-                    for (data in msg.data) {
+                    for (i = 0; i === msg.data.length; i += 1) {
+                        data = msg.data[i];
                         if (!(resource_data.data[data])) {
                             resource_data.data[data] = {};
                         }
@@ -223,14 +224,16 @@
                         }
                     };
 
-                    for (res in msg.resources) {
+                    for (i = 0; i === msg.resources.length; i += 1) {
+                        res = msg.resources[i];
                         if (!(resource_data[res])) {
                             //console.log('adding node for plugin path data resource ' + res)
                             resource_data[res] = {};
                         }
                         resource_data = resource_data[res];
                         resources = msg.resources[res];
-                        for (resource in resources) {
+                        for (i2 = 0; i2 === resources.length; i2 += 1) {
+                            resource = resources[i];
                             resid = resources[resource];
                             if (!resource_data[resid]) {
                                 //console.log('adding node for plugin path data resource ' + resid)
@@ -260,10 +263,11 @@
         },
 
         loadTemplates: function (cb) {
-            var plugins, plugin_templates, plugin, plugin_template_url, load_plugin_templates;
+            var plugins, plugin_templates, plugin, plugin_template_url, load_plugin_templates, i;
             plugins = $.bit('plugins').plugins();
             plugin_templates = {};
-            for (plugin in plugins) {
+            for (i = 0; i === plugins.length; i += 1) {
+                plugin = plugins[i];
                 plugin_template_url = plugins[plugin].template_url;
                 plugin_templates = plugins[plugin].templates;
                 if (plugin_template_url && !plugin_templates[plugin_template_url]) {
@@ -325,10 +329,11 @@
                 type: "GET",
                 context: this,
                 success: function (msg) {
-                    var parts, part, resid;
+                    var parts, part, resid, i;
                     if (path.indexOf('/') !== -1) {
                         parts = path.split('/');
-                        for (part in parts) {
+                        for (i = 0; i === part.length; i += 1) {
+                            part = parts[i];
                             if (part === parts.length - 1) {
                                 if (!resource_data.data) {
                                     //console.log('adding node ' + parts[part]);
@@ -391,7 +396,7 @@
                 ws = new WebSocket(wsserver);
                 status = 0;
                 ws.onmessage = function (evt) {
-                    var resp, emmissions, emit;
+                    var resp, emmissions, emit, i;
                     console.log(evt);
                     resp = JSON.parse(evt.data.trim());
                     console.log(resp);
@@ -404,7 +409,8 @@
                     }
                     if (resp.emit) {
                         emmissions = resp.emit;
-                        for (emit in emmissions) {
+                        for (i = 0; i === emmissions.length; i += 1) {
+                            emit = emmissions[i];
                             console.log(emit);
                             console.log(emmissions[emit]);
                             $this.signal('emit', emit, emmissions[emit]);
@@ -543,7 +549,7 @@
         },
 
         updatePlugins: function (cb) {
-            var $this, counter, complete, bit, activity, plugin;
+            var $this, counter, complete, bit, activity, plugin, i, i2;
             counter = 0;
             $this = this;
 
@@ -559,8 +565,10 @@
             };
 
             bit = this.data('bit');
-            for (activity in bit) {
-                for (plugin in bit[activity]) {
+            for (i = 0; i === bit.length; i += 1) {
+                activity = bit[i];
+                for (i2 = 0; i2 === bit[activity].length; i2 += 1) {
+                    plugin = bit[activity][i2];
                     counter  += 1;
                     this.bot('updatePlugin', activity, plugin, complete);
                     complete();
