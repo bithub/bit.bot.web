@@ -4,38 +4,10 @@
   <include package="bit.bot.http" />
   <include package="bit.bot.jtk" />
   <adapter
-      factory=".css.WebCSS"
-      provides="bit.bot.common.interfaces.IWebResource"
-      for="bit.bot.common.interfaces.IWebCSS"
-      />
-  <adapter
-      factory=".js.WebJS"
-      provides="bit.bot.common.interfaces.IWebResource"
-      for="bit.bot.common.interfaces.IWebJS"
-      />
-  <adapter
       factory=".images.BotImages"
       for="bit.bot.http.interfaces.IHTTPRoot"
       provides="bit.bot.http.interfaces.IHTTPResource"
       name="images"
-      />
-  <adapter
-      factory=".css.BotCSS"
-      for="bit.bot.http.interfaces.IHTTPRoot"
-      provides="bit.bot.http.interfaces.IHTTPResource"
-      name="css"
-      />
-  <adapter
-      factory=".js.BotJS"
-      for="bit.bot.http.interfaces.IHTTPRoot"
-      provides="bit.bot.http.interfaces.IHTTPResource"
-      name="js"
-      />
-  <adapter
-      factory=".html.BotHTML"
-      for="bit.bot.http.interfaces.IHTTPRoot"
-      provides="bit.bot.http.interfaces.IHTTPResource"
-      name="html"
       />
   <adapter
       factory=".jplates.BotJPlates"
@@ -54,24 +26,8 @@
       provides="bit.bot.common.interfaces.IWebRoot"
       />
   <utility
-      factory=".html.botHTMLResources"
-      name="html"
-      />
-  <utility
-      factory=".html.botHTML"
-      name="html"
-      />
-  <utility
       factory=".images.botImages"
       name="images"
-      />
-  <utility
-      factory=".js.botJS"
-      name="js"
-      />
-  <utility
-      factory=".css.botCSS"
-      name="css"
       />
   <utility
       factory=".images.botFavicon"

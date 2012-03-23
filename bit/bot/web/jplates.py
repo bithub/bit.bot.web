@@ -3,9 +3,9 @@ import os
 from zope.interface import implements, implementer
 from zope.component import getAdapter, getUtility
 
-from bit.bot.common.interfaces import IWebJPlates, IJPlates
+from bit.bot.jplates.interfaces import IWebJPlates, IJPlates
 from bit.bot.http.interfaces import IHTTPResource, IHTTPRoot
-from bit.bot.web.html import BotHTMLResources
+from bit.bot.http.html import BotHTMLResources
 from bit.bot.http.resource import BotResource
 
 
