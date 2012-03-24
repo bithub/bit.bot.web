@@ -5,7 +5,7 @@
     bit_methods = {
         init: function (options) {
             var active;
-            console.log('bot: init')
+            console.log('bot: init');
             if (!this.data().bit) {
                 this.data('bit', {});
             }
@@ -26,7 +26,7 @@
         load: function (wss) {
             var $this, active, pathname, uid;
             //this.bot('loadTimer');
-            console.log('bot: load')
+            console.log('bot: load');
             $this = this;
             this.signal();
             this.signal('listen', 'update-data', function (resp) {
@@ -48,13 +48,13 @@
                             var plugins, plugin, i;
                             plugins = $.bit('plugins').plugins();
                             //nsole.log(plugins)
-			    for (plugin in plugins) {
-				if (plugins.hasOwnProperty(plugin)) {
+                            for (plugin in plugins) {
+                                if (plugins.hasOwnProperty(plugin)) {
                                     if (plugins[plugin].load) {
-					plugins[plugin].load($this);
+                                        plugins[plugin].load($this);
                                     }
-				}
-			    }
+                                }
+                            }
                             $this.bot('updatePlugins', function () {
                                 //$this.bot('loadFrame', 'coin', 'trading');
                             });
@@ -73,9 +73,9 @@
             return this;
         },
 
-        generate_uid: function () {	    
+        generate_uid: function () {
             var S4;
-	    console.log('bot: generate_uid')
+            console.log('bot: generate_uid');
             S4 = function () {
                 return (((1 + Math.random()) * 0x10000) || 0).toString(16).substring(1);
             };
@@ -85,14 +85,10 @@
         loadTimer: function () {
             var $this, tid;
             tid = this.data('timer');
-	    console.log('bot: loadTimer')
-            //console.log('loading timer');
+            console.log('bot: loadTimer');
             $this = this;
             if (!tid) {
                 tid = setInterval(function () {
-                    //console.log('update!');
-                    //$this.bot('updatePlugin', 'coin', 'trading');
-                    //console.log('done!');
                 }, 5000);
             }
             return this;
@@ -100,12 +96,11 @@
 
         renderFrame: function (cb) {
             var $this, active, plugin, _cb;
-	    console.log('bot: renderFrame')
+            console.log('bot: renderFrame');
             active = this.data('active');
             plugin = $.bit('plugins').plugins()['bit.' + active.activity + '.' + active.plugin];
             $this = this;
             if (plugin) {
-                //console.log('loading plugin to frame: ',  plugin)
                 _cb = function () {
                     $this.signal('emit', 'frame-loaded');
                     cb();
@@ -119,15 +114,15 @@
             var plugins, plugin_templates, plugin, plugin_template_url, load_plugin_templates;
             plugins = $.bit('plugins').plugins();
             plugin_templates = {};
-	    console.log('bot: loadTemplates ', plugins)
-	    for (plugin in plugins) {
-		if (plugins.hasOwnProperty(plugin)) {
+            console.log('bot: loadTemplates ', plugins);
+            for (plugin in plugins) {
+                if (plugins.hasOwnProperty(plugin)) {
                     plugin_template_url = plugins[plugin].template_url;
                     plugin_templates = plugins[plugin].templates;
                     if (plugin_template_url && !plugin_templates[plugin_template_url]) {
-			plugin_templates[plugin_template_url] = [];
+                        plugin_templates[plugin_template_url] = [];
                     }
-		}
+                }
             }
 
             load_plugin_templates = function () {
@@ -141,10 +136,10 @@
         updatePlugin: function (activity, pluginid, cb) {
             var $this, plugin, plugincb;
             plugin = $.bit('plugins').plugins()['bit.' + activity + '.' + pluginid];
-	    console.log('bot: updatePlugin ', plugin)
+            console.log('bot: updatePlugin ', plugin);
             $this = this;
             if (plugin) {
-                plugincb = function () {		    
+                plugincb = function () {
                     cb();
                 };
                 plugin.updatePlugin(this, plugincb);
@@ -154,12 +149,12 @@
 
 
         /* 
-	   reload the active plugin 
-	*/
+           reload the active plugin 
+        */
         updateFrame: function (activity, pluginid) {
             var plugin;
             plugin = $.bit('plugins').plugins()['bit.' + activity + '.' + pluginid];
-	    console.log('bot: updateFrame ', plugin)
+            console.log('bot: updateFrame ', plugin);
             if (plugin) {
                 plugin.updateFrame(this);
             }
@@ -168,7 +163,7 @@
 
         loadWebSocket: function (wss, cb) {
             var $this, active, wsserver, connected, connect, reconnect, ws;
-	    console.log('bot: loadWebSocket ')
+            console.log('bot: loadWebSocket ');
             $this = this;
             this.signal();
             active = $this.data('active');
@@ -177,7 +172,7 @@
             active.status = {};
             connected = false;
             reconnect = function () {
-		console.log('bot: loadWebSocket:reconnect ', wss)
+                console.log('bot: loadWebSocket:reconnect ', wss);
                 if (active.socket.status === 'connected') {
                     return;
                 }
@@ -217,9 +212,9 @@
                     if (resp.emit) {
                         emmissions = resp.emit;
                         for (emit in emmissions) {
-			    if (emmissions.hasOwnProperty(emit)) {
-				$this.signal('emit', emit, emmissions[emit]);
-			    }
+                            if (emmissions.hasOwnProperty(emit)) {
+                                $this.signal('emit', emit, emmissions[emit]);
+                            }
                         }
                     }
                 };
@@ -319,7 +314,7 @@
                 _msg.session = session;
                 _msg.request = 'message';
                 _msg.message = msg;
-		//ws.send(JSON.stringify(_msg));
+                //ws.send(JSON.stringify(_msg));
             });
 
             $this.signal('listen', 'speak', function (msg) {
@@ -361,23 +356,22 @@
                 if (counter === 0) {
                     $this.signal('emit', 'update-data', 'foo');
                     if (cb) {
-			console.log('finished updating plugins', cb)
                         cb();
                     }
                 }
             };
 
             bit = this.data('bit');
-	    for (activity in bit) {
-		if (bit.hasOwnProperty(activity)) {
-		    for (plugin in bit[activity]) {
-			if (bit[activity].hasOwnProperty(plugin)) {
-			    counter  += 1;
-			    this.bot('updatePlugin', activity, plugin, complete);
-			    complete();
-			}
+            for (activity in bit) {
+                if (bit.hasOwnProperty(activity)) {
+                    for (plugin in bit[activity]) {
+                        if (bit[activity].hasOwnProperty(plugin)) {
+                            counter  += 1;
+                            this.bot('updatePlugin', activity, plugin, complete);
+                            complete();
+                        }
                     }
-		}
+                }
             }
             return this;
         }

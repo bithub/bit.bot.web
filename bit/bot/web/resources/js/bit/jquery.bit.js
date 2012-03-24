@@ -1,5 +1,5 @@
 (function ($) {
-    //"use strict";
+    "use strict";
     var bit_url, bit_bit, Plugin, PluginRegistry, plugin_cache, bit_registry, bit_methods, active;
     bit_url = function () {
         try {
@@ -22,7 +22,7 @@
             for (plugin in plugins) {
                 if (plugins.hasOwnProperty(plugin)) {
                     plugin_cache[plugin] = plugins[plugin];
-		}
+                }
             }
         };
 

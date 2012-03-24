@@ -1,5 +1,5 @@
 (function ($) {
-    //"use strict";
+    "use strict";
     var BotIcon, BotSpeakButton, BotConnectStatusButton, BotStatusMessage, BotStatus, BotContentButton, BotContentButtons, BotAuthStatusButton, BotListenButton, BotSpeakInput, BotSpeakForm, BotSpeak, BotButton, BotContent, Bot, BotFeet, BotBrain, BotChatSpeaker, BotChatResponseLine, BotChatResponseSpeech, BotChatResponse, BotChatResponseSpeechTail, BotThought, EventMessage, BotEvents, BotChat, BotEarLeft, BotEarRight, PanelBotFeet, PanelBotBrain, PanelBotEarRight, PanelBotEarLeft, BitBot, PanelBot;
 
     BotIcon = function (ctx) {
@@ -56,12 +56,10 @@
             disconnected.src = '/images/disconnected.png';
 
             ctx.signal('listen', 'socket-disconnected', function () {
-                //console.log(active.socket.status)
                 $this.kids.image.element.attr('src', '/images/' + active.socket.status + '.png');
             });
 
-            ctx.signal('listen', 'socket-connected', function () {		
-                //console.log(active.socket.status)
+            ctx.signal('listen', 'socket-connected', function () {
                 $this.kids.image.element.attr('src', '/images/' + active.socket.status + '.png');
             });
         };
@@ -1010,14 +1008,14 @@
                 east: this.renderRight,
                 south: this.renderBottom
             };
-	    for (side in sides) {
-		if (sides.hasOwnProperty(side)) {
+            for (side in sides) {
+                if (sides.hasOwnProperty(side)) {
                     try {
-			sides[side](ctx, content.kids['ui-layout-' + side], _cb);
+                        sides[side](ctx, content.kids['ui-layout-' + side], _cb);
                     } catch (err) {
-			console.log(err);
+                        console.log(err);
                     }
-		}
+                }
             }
         },
 
@@ -1082,13 +1080,13 @@
             loadPanels = function (panel) {
                 var sides, side;
                 sides = ['north', 'east', 'center', 'west', 'south'];
-		for (side in sides) {
-		    if (sides.hasOwnProperty(side)) {
-			panel.add('ui-layout-' + sides[side],
-				  $.bit('panel').init(ctx),
-				  panel.element,
-				  panelsLoaded);
-		    }
+                for (side in sides) {
+                    if (sides.hasOwnProperty(side)) {
+                        panel.add('ui-layout-' + sides[side],
+                                  $.bit('panel').init(ctx),
+                                  panel.element,
+                                  panelsLoaded);
+                    }
                 }
             };
 
