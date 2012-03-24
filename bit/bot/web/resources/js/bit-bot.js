@@ -1,5 +1,5 @@
 (function ($) {
-    "use strict";
+    //"use strict";
     var BotIcon, BotSpeakButton, BotConnectStatusButton, BotStatusMessage, BotStatus, BotContentButton, BotContentButtons, BotAuthStatusButton, BotListenButton, BotSpeakInput, BotSpeakForm, BotSpeak, BotButton, BotContent, Bot, BotFeet, BotBrain, BotChatSpeaker, BotChatResponseLine, BotChatResponseSpeech, BotChatResponse, BotChatResponseSpeechTail, BotThought, EventMessage, BotEvents, BotChat, BotEarLeft, BotEarRight, PanelBotFeet, PanelBotBrain, PanelBotEarRight, PanelBotEarLeft, BitBot, PanelBot;
 
     BotIcon = function (ctx) {
@@ -60,7 +60,7 @@
                 $this.kids.image.element.attr('src', '/images/' + active.socket.status + '.png');
             });
 
-            ctx.signal('listen', 'socket-connected', function () {
+            ctx.signal('listen', 'socket-connected', function () {		
                 //console.log(active.socket.status)
                 $this.kids.image.element.attr('src', '/images/' + active.socket.status + '.png');
             });
@@ -990,6 +990,7 @@
 
         updateFrame: function (ctx, cb) {
             var content, _cb, counter, sides, side, i;
+            console.log('bit-bot: updateFrame ', this);
             content = ctx.data('frame').kids['content-panel'];
             //console.log(cb)
             _cb = function () {
@@ -1009,19 +1010,20 @@
                 east: this.renderRight,
                 south: this.renderBottom
             };
-            for (i = 0; i === sides.length; i += 1) {
-                side = sides[i];
-                try {
-                    sides[side](ctx, content.kids['ui-layout-' + side], _cb);
-                } catch (err) {
-                    console.log(err);
-                }
+	    for (side in sides) {
+		if (sides.hasOwnProperty(side)) {
+                    try {
+			sides[side](ctx, content.kids['ui-layout-' + side], _cb);
+                    } catch (err) {
+			console.log(err);
+                    }
+		}
             }
         },
 
         renderFrame: function (ctx, cb) {
-            //console.log('loading bitonomy HTML');
             var $this, counter, panelsLoaded, loadPanels, loadContent;
+            console.log('bit-bot: renderFrame ', this);
             $this = this;
             counter = 5;
             panelsLoaded = function (panel) {
@@ -1058,7 +1060,6 @@
                     layout.sizePane('south', 36);
                     layout.sizePane('west',  350);
                     layout.sizePane('east',  350);
-
                     if (cb) {
                         cb();
                     }
@@ -1079,19 +1080,19 @@
             };
 
             loadPanels = function (panel) {
-                var sides, p, i;
+                var sides, side;
                 sides = ['north', 'east', 'center', 'west', 'south'];
-                for (i = 0; i === sides.length; i += 1) {
-                    p = sides[i];
-                    panel.add('ui-layout-' + sides[p],
-                              $.bit('panel').init(ctx),
-                              panel.element,
-                              panelsLoaded);
+		for (side in sides) {
+		    if (sides.hasOwnProperty(side)) {
+			panel.add('ui-layout-' + sides[side],
+				  $.bit('panel').init(ctx),
+				  panel.element,
+				  panelsLoaded);
+		    }
                 }
             };
 
             loadContent = function (frame) {
-                //console.log('loading content')
                 frame.add('content-panel',
                           $.bit('panel').init(ctx),
                           frame.element,
@@ -1105,7 +1106,7 @@
 
         updatePlugin: function (ctx, cb) {
             var bit, frame, active, pluginid, activity, counter, complete;
-            //console.log('updating plugin: bit.' + this.activity + '.' + this.plugin);
+            console.log('bit-bot: updatePlugin ', this);
             bit = ctx.data('bit');
             frame = ctx.data('frame');
             active = ctx.data('active');

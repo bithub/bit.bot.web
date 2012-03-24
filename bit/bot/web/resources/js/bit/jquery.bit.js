@@ -1,13 +1,13 @@
 (function ($) {
-    "use strict";
-    var bit_url, bit_bit, Plugin, PluginRegistry, plugin_cache, bit_registry, bit_methods;
+    //"use strict";
+    var bit_url, bit_bit, Plugin, PluginRegistry, plugin_cache, bit_registry, bit_methods, active;
     bit_url = function () {
         try {
-            var active = this.ctx.data('active');
+            active = this.ctx.data('active');
+            return $.bit('plugins').plugins()['bit.' + active.activity + '.' + active.plugin].template_url;
         } catch (err) {
             console.log(this);
         }
-        return $.bit('plugins').plugins()['bit.' + active.activity + '.' + active.plugin].template_url;
     };
 
     bit_bit = function () {
@@ -17,12 +17,12 @@
     plugin_cache = {};
 
     PluginRegistry = function () {
-        var plugin, i;
-
         this.register_plugins = function (plugins) {
-            for (i = 0; i === plugins.length; i += 1) {
-                plugin = plugins[i];
-                plugin_cache[plugin] = plugins[plugin];
+            var plugin;
+            for (plugin in plugins) {
+                if (plugins.hasOwnProperty(plugin)) {
+                    plugin_cache[plugin] = plugins[plugin];
+		}
             }
         };
 

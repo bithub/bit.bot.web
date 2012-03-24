@@ -1,11 +1,11 @@
 (function ($) {
     "use strict";
-    var bit_methods;
+    var bit_methods, connected;
 
     bit_methods = {
         init: function (options) {
             var active;
-            //console.log('starting bot');
+            console.log('bot: init')
             if (!this.data().bit) {
                 this.data('bit', {});
             }
@@ -24,9 +24,9 @@
             return $.bit('plugins').plugins();
         },
         load: function (wss) {
-            var $this, connected, active, pathname, uid;
-            //console.log('loading bot');
+            var $this, active, pathname, uid;
             //this.bot('loadTimer');
+            console.log('bot: load')
             $this = this;
             this.signal();
             this.signal('listen', 'update-data', function (resp) {
@@ -35,26 +35,26 @@
                 $this.bot('updateFrame', active.activity, active.plugin);
             });
             connected = false;
-            this.signal('listen', 'connection-made', function () {
+            this.signal('listen', 'socket-connected', function () {
                 $this.signal('emit', 'send-helo', '');
-                $this.signal('listen', 'helo', function () {
+                $this.signal('listen', 'helo', function (resp) {
                     if (connected) {
                         $this.bot('updatePlugins');
                         return;
                     }
                     connected = true;
                     $this.bot('loadTemplates', function () {
-                        //console.log('rendering frame')
                         $this.bot('renderFrame', function () {
                             var plugins, plugin, i;
-                            //console.log('updating plugins')
                             plugins = $.bit('plugins').plugins();
                             //nsole.log(plugins)
-                            for (i = 0; i === plugins.length; i += 1) {
-                                if (plugins[plugin].load) {
-                                    plugins[plugin].load($this);
-                                }
-                            }
+			    for (plugin in plugins) {
+				if (plugins.hasOwnProperty(plugin)) {
+                                    if (plugins[plugin].load) {
+					plugins[plugin].load($this);
+                                    }
+				}
+			    }
                             $this.bot('updatePlugins', function () {
                                 //$this.bot('loadFrame', 'coin', 'trading');
                             });
@@ -73,8 +73,9 @@
             return this;
         },
 
-        generate_uid: function () {
+        generate_uid: function () {	    
             var S4;
+	    console.log('bot: generate_uid')
             S4 = function () {
                 return (((1 + Math.random()) * 0x10000) || 0).toString(16).substring(1);
             };
@@ -84,6 +85,7 @@
         loadTimer: function () {
             var $this, tid;
             tid = this.data('timer');
+	    console.log('bot: loadTimer')
             //console.log('loading timer');
             $this = this;
             if (!tid) {
@@ -96,72 +98,14 @@
             return this;
         },
 
-        fund: function (curr) {
-            return (curr / 100000000).toFixed(8);
-        },
-
-        renderContentLeft: function () {
-            var plugins, activity, plugin;
-            plugins = $.bit('plugins');
-            activity = this.data('active').activity;
-            plugin = this.data('active').plugin;
-            plugins['bit.' + activity + '.' + plugin].renderLeft(this, this.find('.botContentLeft'));
-            return this;
-        },
-
-        renderContentRight: function () {
-            var plugins, activity, plugin;
-            plugins = $.bit('plugins').plugins();
-            activity = this.data('active').activity;
-            plugin = this.data('active').plugin;
-            plugins['bit.' + activity + '.' + plugin].renderRight(this, this.find('.botContentRight'));
-        },
-
-        renderContentCenter: function () {
-            var plugins, activity, plugin, content;
-            plugins = $.bit('plugins').plugins();
-            activity = this.data('active').activity;
-            plugin = this.data('active').plugin;
-            content = this.data('frame').kids['content-panel'];
-            plugins['bit.' + activity + '.' + plugin].renderCenter(this, content.kids['ui-layout-center']);
-        },
-
-        renderContentTop: function () {
-            var plugins, activity, plugin;
-            plugins = $.bit('plugins').plugins();
-            activity = this.data('active').activity;
-            plugin = this.data('active').plugin;
-            plugins['bit.' + activity + '.' + plugin].renderTop(this, this.find('.botContentTop'));
-            return this;
-        },
-
-        updateLayout: function (area, layout) {
-            var active, activity, plugin;
-            active = this.data('active');
-            activity = active.activity;
-            plugin = active.plugin;
-            this.data('active').content[area] = layout;
-            this.bot('renderContentCenter');
-            return this;
-        },
-
-        updateWidget: function (widget, v) {
-            var active, activity, plugin;
-            active = this.data('active');
-            activity = active.activity;
-            plugin = active.plugin;
-            //console.log('updating widget: ' + widget + ' ' + v)
-            this.data('active').widgets[widget] = v;
-            return this;
-        },
-
         renderFrame: function (cb) {
             var $this, active, plugin, _cb;
+	    console.log('bot: renderFrame')
             active = this.data('active');
             plugin = $.bit('plugins').plugins()['bit.' + active.activity + '.' + active.plugin];
             $this = this;
             if (plugin) {
-                //console.log('loading plugin ' + plugin + ' to frame')
+                //console.log('loading plugin to frame: ',  plugin)
                 _cb = function () {
                     $this.signal('emit', 'frame-loaded');
                     cb();
@@ -171,108 +115,19 @@
             return this;
         },
 
-        renderWidgets: function () {
-                //console.log('loading bot widgets');
-            return this;
-        },
-
-        updateResource: function (activity, plugin, path, cb) {
-            //console.log('updating plugin resource: bit.' + activity + '.' + plugin + '.' + path);
-            var bit, $this, req;
-            bit = this.data('bit');
-            $this = this;
-            req = $.ajax({
-                url: "http://b0b.3ca.org.uk/calendar/json/" + activity + '/' + plugin + '/' + path,
-                dataType: "json",
-                type: "GET",
-                context: this,
-                success: function (msg) {
-                    var plugin_data, resource_data, parts, part, counter, complete, i, data, resources, res, resid, resource, i2;
-                    //console.log('receiving resource data' + activity + '.' + plugin + '.' + path);
-                    plugin_data = bit[activity][plugin];
-                    resource_data = plugin_data;
-                    if (path.indexOf('/') !== -1) {
-                        parts = path.split('/');
-                        for (i = 0; i === parts.length; i += 1) {
-                            part = parts[i];
-                            if (!resource_data[parts[part]]) {
-                                resource_data[parts[part]] = {};
-                            }
-                            resource_data = resource_data[parts[part]];
-                        }
-                    } else {
-                        resource_data = plugin_data[path];
-                    }
-                    if (!(resource_data.data)) {
-                        resource_data.data = {};
-                    }
-                    for (i = 0; i === msg.data.length; i += 1) {
-                        data = msg.data[i];
-                        if (!(resource_data.data[data])) {
-                            resource_data.data[data] = {};
-                        }
-                        resource_data.data[data] = msg.data[data];
-                    }
-                    counter = 0;
-                    complete = function () {
-                        counter -= 1;
-                        //console.log('finished updating plugin resource: bit.' + activity + '.' + plugin + '.' + path);
-                        if (counter === 0) {
-                            if (cb) {
-                                cb();
-                            }
-                        }
-                    };
-
-                    for (i = 0; i === msg.resources.length; i += 1) {
-                        res = msg.resources[i];
-                        if (!(resource_data[res])) {
-                            //console.log('adding node for plugin path data resource ' + res)
-                            resource_data[res] = {};
-                        }
-                        resource_data = resource_data[res];
-                        resources = msg.resources[res];
-                        for (i2 = 0; i2 === resources.length; i2 += 1) {
-                            resource = resources[i];
-                            resid = resources[resource];
-                            if (!resource_data[resid]) {
-                                //console.log('adding node for plugin path data resource ' + resid)
-                                resource_data[resid] = {};
-                            }
-                            counter  += 1;
-                            this.bot('updateResource', activity, plugin, path + '/' + res + '/' + resid, complete);
-                        }
-                    }
-                    if (counter === 0) {
-                        if (cb) {
-                            cb();
-                        }
-                    }
-                }
-            });
-            return this;
-        },
-
-        loadPlugin: function (activity, pluginid, cb) {
-            var plugin;
-            plugin = $.bit('plugins').plugins()['bit.' + activity + '.' + pluginid];
-            if (plugin.loadPlugin) {
-                plugin.loadPlugin(this, cb);
-            }
-            return this;
-        },
-
         loadTemplates: function (cb) {
-            var plugins, plugin_templates, plugin, plugin_template_url, load_plugin_templates, i;
+            var plugins, plugin_templates, plugin, plugin_template_url, load_plugin_templates;
             plugins = $.bit('plugins').plugins();
             plugin_templates = {};
-            for (i = 0; i === plugins.length; i += 1) {
-                plugin = plugins[i];
-                plugin_template_url = plugins[plugin].template_url;
-                plugin_templates = plugins[plugin].templates;
-                if (plugin_template_url && !plugin_templates[plugin_template_url]) {
-                    plugin_templates[plugin_template_url] = [];
-                }
+	    console.log('bot: loadTemplates ', plugins)
+	    for (plugin in plugins) {
+		if (plugins.hasOwnProperty(plugin)) {
+                    plugin_template_url = plugins[plugin].template_url;
+                    plugin_templates = plugins[plugin].templates;
+                    if (plugin_template_url && !plugin_templates[plugin_template_url]) {
+			plugin_templates[plugin_template_url] = [];
+                    }
+		}
             }
 
             load_plugin_templates = function () {
@@ -286,9 +141,10 @@
         updatePlugin: function (activity, pluginid, cb) {
             var $this, plugin, plugincb;
             plugin = $.bit('plugins').plugins()['bit.' + activity + '.' + pluginid];
+	    console.log('bot: updatePlugin ', plugin)
             $this = this;
             if (plugin) {
-                plugincb = function () {
+                plugincb = function () {		    
                     cb();
                 };
                 plugin.updatePlugin(this, plugincb);
@@ -296,71 +152,23 @@
             return this;
         },
 
-        /* load the active plugin */
-        loadFrame: function (activity, pluginid) {
-            var plugin;
-            plugin = $.bit('plugins').plugins()['bit.' + activity + '.' + pluginid];
-            if (plugin) {
-                console.log('loading plugin ' + pluginid + ' to frame');
-                //plugin.loadFrame(this);
-            }
-            return this;
-        },
 
-        /* reload the active plugin */
+        /* 
+	   reload the active plugin 
+	*/
         updateFrame: function (activity, pluginid) {
             var plugin;
             plugin = $.bit('plugins').plugins()['bit.' + activity + '.' + pluginid];
+	    console.log('bot: updateFrame ', plugin)
             if (plugin) {
-                //console.log('loading plugin ' + pluginid + ' to frame')
                 plugin.updateFrame(this);
             }
             return this;
         },
 
-        updateResourceData: function (activity, plugin, path) {
-            var bit, plugin_data, resource_data;
-            bit = this.data('bit');
-            plugin_data = bit[activity][plugin];
-            resource_data = plugin_data;
-            $.ajax({
-                url: "http://curate.3ca.org.uk/calendar/json/" + activity + '/' + plugin + '/' + path,
-                dataType: "json",
-                type: "GET",
-                context: this,
-                success: function (msg) {
-                    var parts, part, resid, i;
-                    if (path.indexOf('/') !== -1) {
-                        parts = path.split('/');
-                        for (i = 0; i === part.length; i += 1) {
-                            part = parts[i];
-                            if (part === parts.length - 1) {
-                                if (!resource_data.data) {
-                                    //console.log('adding node ' + parts[part]);
-                                    resource_data.data = {};
-                                }
-                                resource_data = resource_data.data;
-                                resid = parts[part];
-                            } else {
-                                if (!resource_data[parts[part]]) {
-                                        //console.log('adding node ' + parts[part]);
-                                    resource_data[parts[part]] = {};
-                                }
-                                resource_data = resource_data[parts[part]];
-                            }
-                        }
-                    } else {
-                        resource_data = plugin_data;
-                        resid = path;
-                    }
-                    //resource_data[resid] = msg;
-                }
-            });
-            return this;
-        },
-
         loadWebSocket: function (wss, cb) {
             var $this, active, wsserver, connected, connect, reconnect, ws;
+	    console.log('bot: loadWebSocket ')
             $this = this;
             this.signal();
             active = $this.data('active');
@@ -368,8 +176,8 @@
             wsserver = wss;
             active.status = {};
             connected = false;
-
             reconnect = function () {
+		console.log('bot: loadWebSocket:reconnect ', wss)
                 if (active.socket.status === 'connected') {
                     return;
                 }
@@ -388,39 +196,37 @@
 
             connect = function () {
                 var status;
+                console.log('bot: loadWebSocket:connect ', wsserver);
                 active.socket.status = 'connecting';
                 $this.signal('emit', 'socket-connecting', '');
                 $this.signal('emit', 'status-message', 'connecting to ' + wsserver);
-                console.log('starting ws connection');
-                console.log(wsserver);
                 ws = new WebSocket(wsserver);
                 status = 0;
                 ws.onmessage = function (evt) {
                     var resp, emmissions, emit, i;
-                    console.log(evt);
                     resp = JSON.parse(evt.data.trim());
-                    console.log(resp);
+
                     if (resp.__bit_ac) {
-                        //console.log(resp)
                         document.cookie = "__bit_ac=" + resp.__bit_ac + "; path=/";
                     }
+
                     if (resp.bit) {
-                        $.extend($this.data.bit, resp.bit);
+                        $.extend($this.data('bit'), resp.bit);
                     }
+
                     if (resp.emit) {
                         emmissions = resp.emit;
-                        for (i = 0; i === emmissions.length; i += 1) {
-                            emit = emmissions[i];
-                            console.log(emit);
-                            console.log(emmissions[emit]);
-                            $this.signal('emit', emit, emmissions[emit]);
+                        for (emit in emmissions) {
+			    if (emmissions.hasOwnProperty(emit)) {
+				$this.signal('emit', emit, emmissions[emit]);
+			    }
                         }
                     }
                 };
 
                 ws.onclose = function (evt) {
                     var session;
-                    console.log('disconnected');
+                    console.log('bot: loadWebSocket:onclose');
                     session = '';
                     active.socket = {};
                     active.socket.status = 'disconnected';
@@ -431,16 +237,16 @@
 
                 ws.onopen = function (evt) {
                     var session;
+                    console.log('bot: loadWebSocket:onopen');
                     session = '';
                     $this.signal('emit', 'status-message', 'connected to ' + wsserver);
                     active.socket.status = 'connected';
                     if (!connected) {
                         connected = true;
-                        console.log('connected');
                         $this.signal('emit', 'socket-connected', '');
                     } else {
+                        console.log('socket re-connected');
                         $this.signal('emit', 'socket-connected', '');
-                        console.log('re-connected');
                     }
                 };
                 return ws;
@@ -452,7 +258,6 @@
             });
 
             $this.signal('listen', 'auth-successful', function (resp) {
-                console.log('auth successful: ' + resp);
                 active.person = {};
                 active.person.jid = resp;
                 $this.data('session', resp.split('/')[1]);
@@ -468,8 +273,7 @@
                 _msg.command = signal;
                 _msg.args = args;
                 _msg.request = 'command';
-                console.log('SENDING');
-                console.log(_msg);
+                console.log("sending message: ", _msg);
                 ws.send(JSON.stringify(_msg));
             });
 
@@ -493,9 +297,8 @@
                 _msg.session = session;
                 _msg.__bit_ac = document.cookie;
                 _msg.request = 'subscribe';
-                console.log('SENDING');
-                console.log(_msg);
                 ws.send(JSON.stringify(_msg));
+                console.log("subscribing: ", _msg);
             });
             //console.log(window.location.href)
 
@@ -505,8 +308,6 @@
                 _msg.session = $this.data('session');
                 _msg.__bit_ac = document.cookie;
                 _msg.request = 'helo';
-                console.log('SENDING');
-                console.log(_msg);
                 ws.send(JSON.stringify(_msg));
             });
 
@@ -517,7 +318,8 @@
                 _msg.__bit_ac = document.cookie;
                 _msg.session = session;
                 _msg.request = 'message';
-                //ws.send(JSON.stringify(_msg));
+                _msg.message = msg;
+		//ws.send(JSON.stringify(_msg));
             });
 
             $this.signal('listen', 'speak', function (msg) {
@@ -550,29 +352,32 @@
 
         updatePlugins: function (cb) {
             var $this, counter, complete, bit, activity, plugin, i, i2;
+            console.log('bot: updatePlugins');
             counter = 0;
             $this = this;
 
             complete = function () {
                 counter -= 1;
                 if (counter === 0) {
-                    //console.log('finished updating plugins')
                     $this.signal('emit', 'update-data', 'foo');
                     if (cb) {
+			console.log('finished updating plugins', cb)
                         cb();
                     }
                 }
             };
 
             bit = this.data('bit');
-            for (i = 0; i === bit.length; i += 1) {
-                activity = bit[i];
-                for (i2 = 0; i2 === bit[activity].length; i2 += 1) {
-                    plugin = bit[activity][i2];
-                    counter  += 1;
-                    this.bot('updatePlugin', activity, plugin, complete);
-                    complete();
-                }
+	    for (activity in bit) {
+		if (bit.hasOwnProperty(activity)) {
+		    for (plugin in bit[activity]) {
+			if (bit[activity].hasOwnProperty(plugin)) {
+			    counter  += 1;
+			    this.bot('updatePlugin', activity, plugin, complete);
+			    complete();
+			}
+                    }
+		}
             }
             return this;
         }

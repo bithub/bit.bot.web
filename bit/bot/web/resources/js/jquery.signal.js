@@ -32,10 +32,9 @@
 		var listener = this.data('__signal_handler');
 		if(event in listener)
 		{
+		    console.log('signal: ', event, resp);
 		    for (var cb in listener[event])
 		    {
-			//console.log('emitting event: '+event);		    
-			//console.log(listener[event][cb](resp));
 			listener[event][cb](resp);
 		    }
 		}
