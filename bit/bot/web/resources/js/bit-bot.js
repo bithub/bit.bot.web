@@ -232,7 +232,7 @@
         this.params.type = type;
         this.after_add = function () {
             if (type === 'text') {
-                $this.hint($this.$);
+                //$this.hint($this.$);
             }
 
             $this.$.keypress(function (evt) {
@@ -240,10 +240,10 @@
                     evt.preventDefault();
                     if (type === 'text') {
                         ctx.signal('emit', 'speak', $this.$.val());
-                    }
-                } else {
-                    ctx.signal('emit', 'speak-password', $this.$.val());
-                    $this.$.val('');
+                    } else {
+			ctx.signal('emit', 'speak-password', $this.$.val());
+			$this.$.val('');
+		    }
                 }
             });
         };
