@@ -1,7 +1,13 @@
 <configure
     xmlns="http://namespaces.zope.org/zope">
+
   <include 
       package="bit.bot.http" 
+      file="plugin.zcml" 
+      />
+
+  <include 
+      package="bit.bot.socket" 
       file="plugin.zcml" 
       />
 

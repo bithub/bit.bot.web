@@ -2,6 +2,7 @@
     xmlns="http://namespaces.zope.org/zope"
     i18n_domain="bit.bot.web">
   <include package="bit.bot.http" />
+  <include package="bit.bot.socket" />
   <include package="bit.bot.jtk" />
   <adapter
       factory=".images.BotImages"
