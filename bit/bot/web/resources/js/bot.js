@@ -15,9 +15,6 @@
             active = this.data('active');
             active.activity = 'bot';
             active.plugin = 'base';
-            active.content = {'right': 'trading.account.exchanges'};
-            active.widgets = {'trading.account.funds': 'mtgox:phlax2',
-                              'trading.account.exchanges': 'mtgox:phlax2'};
             return this.bot('load', options.wss);
         },
         plugins: function () {
@@ -56,7 +53,7 @@
                                 }
                             }
                             $this.bot('updatePlugins', function () {
-                                //$this.bot('loadFrame', 'coin', 'trading');
+
                             });
                         });
                     });
@@ -74,12 +71,11 @@
         },
 
         generate_uid: function () {
-            var S4;
             console.log('bot: generate_uid');
-            S4 = function () {
-                return (((1 + Math.random()) * 0x10000) || 0).toString(16).substring(1);
-            };
-            return (S4() + S4() + S4() + S4() + S4() + S4() + S4() + S4());
+	    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+		var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+		return v.toString(16);
+	    });
         },
 
         loadTimer: function () {
@@ -201,8 +197,12 @@
                     var resp, emmissions, emit, i;
                     resp = JSON.parse(evt.data.trim());
 
-                    if (resp.__bit_ac) {
-                        document.cookie = "__bit_ac=" + resp.__bit_ac + "; path=/";
+                    if (resp.token) {
+                        document.cookie = "__bit_ac=" + resp.token + "; path=/";
+                    }
+
+                    if (resp.session) {
+			$this.data('session', resp.session);
                     }
 
                     if (resp.bit) {
@@ -264,7 +264,7 @@
                 args = resp[1];
                 _msg  = {};
                 _msg.session = $this.data('session');
-                _msg.__bit_ac = document.cookie;
+                _msg.token = document.cookie;
                 _msg.command = signal;
                 _msg.args = args;
                 _msg.request = 'command';
@@ -290,7 +290,7 @@
                 session = $this.data('frame').guid();
                 _msg.subscribe = msg;
                 _msg.session = session;
-                _msg.__bit_ac = document.cookie;
+                _msg.token = document.cookie;
                 _msg.request = 'subscribe';
                 ws.send(JSON.stringify(_msg));
                 console.log("subscribing: ", _msg);
@@ -301,7 +301,7 @@
                 var _msg;
                 _msg = {};
                 _msg.session = $this.data('session');
-                _msg.__bit_ac = document.cookie;
+                _msg.token = document.cookie;
                 _msg.request = 'helo';
                 ws.send(JSON.stringify(_msg));
             });
@@ -310,7 +310,7 @@
                 var _msg, session;
                 _msg = {};
                 session = $this.data('session');
-                _msg.__bit_ac = document.cookie;
+                _msg.token = document.cookie;
                 _msg.session = session;
                 _msg.request = 'message';
                 _msg.message = msg;
@@ -321,7 +321,7 @@
                 var _msg, session;
                 _msg = {};
                 session = $this.data('session');
-                _msg.__bit_ac = document.cookie;
+                _msg.token = document.cookie;
                 //console.log(document.cookie)
                 //console.log(session)
                 _msg.session = session;
@@ -334,7 +334,7 @@
                 var _msg, session;
                 _msg = {};
                 session = $this.data('session');
-                _msg.__bit_ac = document.cookie;
+                _msg.token = document.cookie;
                 _msg.session = session;
                 _msg.password = msg;
                 _msg.request = 'auth';

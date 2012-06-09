@@ -602,7 +602,7 @@
     BotChatResponseLine.prototype = $.bit('widget');
 
     BotChatResponseSpeech = function (ctx, speaker, msg) {
-        var $this, lines, line, chat_response, i;
+        var $this, lines, line, chat_response, l;
         $this = this;
         this.init(ctx);
         lines = msg.split('\n');
@@ -610,21 +610,17 @@
         this.model = {};
 
         this.model.speaker = {
-            child: function (_line) {
+            child: function () {
                 return new BotChatSpeaker(ctx, speaker);
             },
-            args: [lines[line]]
         };
-
         chat_response = function (_line) {
             return new BotChatResponseLine(ctx, _line);
         };
-
-        for (i = 0; i === lines.length; i += 1) {
-            line = lines[i];
-            this.model['bot-line-' + line] = {
+        for (l = 0; l < lines.length; l += 1) {
+            this.model['bot-line-' + l] = {
                 child: chat_response,
-                args: [lines[line]]
+                args: [lines[l]],
             };
         }
     };
@@ -651,7 +647,6 @@
                 }
             };
         }
-
         this.model['response-speech'] = {
             child:  function () {
                 return new BotChatResponseSpeech(ctx, speaker, msg);
