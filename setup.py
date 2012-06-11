@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 import os
 
 
-version = '0.0.23'
+version = '0.0.24'
 
 
 setup(name='bit.bot.web',
