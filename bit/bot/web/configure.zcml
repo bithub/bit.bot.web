@@ -1,49 +1,55 @@
 <configure 
     xmlns="http://namespaces.zope.org/zope"
     i18n_domain="bit.bot.web">
+
   <include package="bit.bot.http" />
   <include package="bit.bot.socket" />
   <include package="bit.bot.jtk" />
+
   <adapter
       factory=".images.BotImages"
       for="bit.bot.http.interfaces.IHTTPRoot"
       provides="bit.bot.http.interfaces.IHTTPResource"
       name="images"
       />
+
   <adapter
       factory=".jplates.BotJPlates"
       for="bit.bot.http.interfaces.IHTTPRoot"
       provides="bit.bot.http.interfaces.IHTTPResource"
       name="jplates"
       />
+
   <adapter
       factory=".images.BotFavicon"
       for="bit.bot.http.interfaces.IHTTPRoot"
       provides="bit.bot.http.interfaces.IHTTPResource"
       name="favicon.ico"
       />
+
   <utility
       component=".root.web_root"
       provides="bit.bot.common.interfaces.IWebRoot"
       />
+
   <utility
       factory=".images.botImages"
       name="images"
       />
+
   <utility
       factory=".images.botFavicon"
       name="favicon.ico"
       />
 
-
   <utility
       factory=".jplates.botJPlatesResources"
       name="jplates"
       />  
+
   <utility
       factory=".jplates.botJPlates"
       name="jplates"
       />
-
 
 </configure>

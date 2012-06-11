@@ -25,6 +25,8 @@ setup(name='bit.bot.web',
       zip_safe=False,
       install_requires=[
           'setuptools',
+          'bit.bot.http',
+          'bit.bot.socket',
       ],
       entry_points="""
       # -*- Entry points: -*-
